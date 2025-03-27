@@ -1,48 +1,62 @@
 # 🧈 butterscripts
 
-A curated collection of lightweight, practical scripts used in my Debian-based setups — especially Butter Bean Linux. These scripts handle everything from installing browsers to setting up fonts, printers, and display managers.
+A personal collection of scripts used across my Debian setups — minimal, modular, and made to pair with [Butter Bean Linux](https://butterbeanlinux.com). These scripts automate installs, apply system tweaks, and handle theming and configuration.
 
-## 📁 Included Scripts
+## 🗂️ Script Categories
 
-### 🔧 System Setup
+### ⚙️ System Setup
 
-- `add_bashrc.sh` – Appends custom `.bashrc` content
-- `bluetooth.sh` – Bluetooth service setup and helpers
-- `lightdm.sh` – LightDM configuration (with Arctica theme, if desired)
-- `printers.sh` – Installs CUPS and common printer tools
+- `add_bashrc.sh` – Appends custom `.bashrc` settings
+- `bluetooth.sh` – Installs and configures Bluetooth support
+- `lightdm.sh` – Sets up LightDM and applies Arctica greeter theme
+- `printers.sh` – Installs CUPS and common printer drivers
+- `nerdfonts.sh` – Installs JetBrainsMono Nerd Font
 
-### 🌐 Browsers
+### 🌐 Browser & Comms
 
-- `firefox-latest.sh` – Installs the latest Firefox binary
-- `librewolf-install.sh` – Installs LibreWolf from binaries
-- `discord.sh` – Installs Discord from the latest tarball
+- `firefox-latest.sh` – Installs latest Firefox binary
+- `librewolf-install.sh` – Installs LibreWolf via `.deb`
+- `discord.sh` – Installs Discord manually from the tarball
 
-### 💻 Apps & Tools
+### 🖥 Terminals & Tools
 
-- `geany-projects.sh` – Auto-setup for Geany project folders
-- `nerdfonts.sh` – Installs Nerd Fonts (JetBrainsMono by default)
-- `neovim.sh` – Installs the latest Neovim `.deb` and optionally clones my config
+- `wezterm.sh` – Installs latest WezTerm `.deb` and config
+- `fastfetch.sh` – Builds and installs Fastfetch + config from `jag_dots`
+- `neovim.sh` – Installs Neovim from `.deb` and offers my config
+- `geany-projects.sh` – Creates quick-start project structure for Geany
 
-## 🚀 Usage
+### 🎨 Appearance
 
-Clone the repo and run any script you need:
+- `install-theme.sh` – Installs Orchis GTK and Colloid icon themes
+
+## 🚀 Getting Started
+
+Clone the repo and run scripts manually:
 
 ```bash
 git clone https://github.com/drewgrif/butterscripts ~/butterscripts
 cd ~/butterscripts
-chmod +x *.sh  # optional, if needed
-./firefox-latest.sh
+chmod +x *.sh  # if needed
+
+./fastfetch.sh
+./install-theme.sh
 ```
 
-You can also use them in your post-install workflow or drop them into an ISO build setup.
+You can mix and match scripts for your own post-install workflow or custom Debian-based builds.
 
-## 🧩 Designed For
+## 🧈 Designed For
 
-- Butter Bean (butterbian) Linux 🧈.  We'll see.  LOL.
-- Any Debian-based distro (Bookworm or newer recommended)
-- Minimal setups with custom WMs (Openbox, BSPWM, etc.)
+- Butter Bean (butterbian)Linux (and other Debian-based systems).  This is a joke... for now.
+- Tiling + floating WM setups (Openbox, BSPWM, etc.)
+- Minimal users who want full control with clean defaults
 
-## 🌐 Links
+## 📫 Author
 
-- [YouTube: JustAGuy Linux](https://youtube.com/@JustAGuyLinux)
-- [My Neovim Config](https://github.com/drewgrif/nvim)
+**JustAGuy Linux**  
+🎥 [YouTube](https://youtube.com/@JustAGuyLinux)  
+
+---
+
+More scripts coming soon. Use what you need, tweak what you want.
+```
+
