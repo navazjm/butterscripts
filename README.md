@@ -1,39 +1,48 @@
 # 🧈 butterscripts
 
-A growing collection of scripts I use across my setups — mostly minimal, always practical.
+A curated collection of lightweight, practical scripts used in my Debian-based setups — especially Butter Bean Linux. These scripts handle everything from installing browsers to setting up fonts, printers, and display managers.
 
-This repo includes post-install tools, WM configs, binary installers, helper scripts, and more. Built with Butter Bean Linux in mind, but useful on any Debian-based system.
+## 📁 Included Scripts
 
-## 🛠 Categories
+### 🔧 System Setup
 
-- `install/` – Scripts for installing apps (e.g. Firefox, Discord, Zen browser)
-- `setup/` – System setup and post-install scripts (e.g. ZRAM, dotfiles, neovim config)
-- `wm/` – Scripts related to window manager setup (e.g. openbox, bspwm, sxhkd)
-- `helpers/` – Miscellaneous tools and utilities (e.g. wallpaper switchers, theme changers)
+- `add_bashrc.sh` – Appends custom `.bashrc` content
+- `bluetooth.sh` – Bluetooth service setup and helpers
+- `lightdm.sh` – LightDM configuration (with Arctica theme, if desired)
+- `printers.sh` – Installs CUPS and common printer tools
 
-## 🧩 Highlights
+### 🌐 Browsers
 
-- Binary installers that skip the bloat
-- Rofi integration with Openbox/BSPWM
-- ZRAM and Snapper-ready post-install setup
-- Modular design — use what you want, ignore the rest
+- `firefox-latest.sh` – Installs the latest Firefox binary
+- `librewolf-install.sh` – Installs LibreWolf from binaries
+- `discord.sh` – Installs Discord from the latest tarball
 
-## 💻 Usage
+### 💻 Apps & Tools
 
-Clone the repo and run scripts manually, or include them in your own setup:
+- `geany-projects.sh` – Auto-setup for Geany project folders
+- `nerdfonts.sh` – Installs Nerd Fonts (JetBrainsMono by default)
+- `neovim.sh` – Installs the latest Neovim `.deb` and optionally clones my config
+
+## 🚀 Usage
+
+Clone the repo and run any script you need:
 
 ```bash
 git clone https://github.com/drewgrif/butterscripts ~/butterscripts
-cd ~/butterscripts/install
+cd ~/butterscripts
+chmod +x *.sh  # optional, if needed
 ./firefox-latest.sh
 ```
 
-## 🌱 Notes
+You can also use them in your post-install workflow or drop them into an ISO build setup.
 
-- Most scripts assume a Debian base
-- Light dependencies; check the top of each script if unsure
+## 🧩 Designed For
 
-## 📫 Author
+- Butter Bean (butterbian) Linux 🧈.  We'll see.  LOL.
+- Any Debian-based distro (Bookworm or newer recommended)
+- Minimal setups with custom WMs (Openbox, BSPWM, etc.)
 
-**JustAGuy Linux**  
-[YouTube](https://youtube.com/@JustAGuyLinux) | [butterbeanlinux.com](https://butterbeanlinux.com)
+## 🌐 Links
+
+- [YouTube: JustAGuy Linux](https://youtube.com/@JustAGuyLinux)
+- [My Neovim Config](https://github.com/drewgrif/nvim)
