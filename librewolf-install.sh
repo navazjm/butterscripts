@@ -18,4 +18,3 @@ sudo apt update
 sudo apt install -y librewolf
 
 echo "LibreWolf installation complete!"
-echo "Not using this anymore"
