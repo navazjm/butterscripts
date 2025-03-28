@@ -25,7 +25,7 @@ Binary installs and user-facing applications.
 - `wezterm.sh` – Installs WezTerm `.deb` and config
 - `fastfetch.sh` – Builds Fastfetch from source and applies config
 - `neovim.sh` – Installs Neovim `.deb` and my custom config
-- `lazygit.gh` - Installs the latest version of lazygit
+- `lazygit.sh` - Installs the latest version of lazygit
 
 ### 🧩 config/
 
