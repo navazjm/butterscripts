@@ -27,6 +27,7 @@ Binary installs and user-facing applications.
 - `wezterm.sh` – Installs WezTerm `.deb` and config
 - `fastfetch.sh` – Builds Fastfetch from source and applies config
 - `neovim.sh` – Installs Neovim `.deb` and my custom config
+- `lazygit.gh` - Installs the latest version of lazygit
 
 ### 🧩 config/
 
@@ -62,7 +63,7 @@ cd ~/butterscripts
 
 ## 🧈 Built For
 
-- **Butter Bean Linux** (and other Debian-based systems)
+- **Butter Bean (butterbian) Linux** (and other Debian-based systems)
 - Window manager setups (BSPWM, Openbox, etc.)
 - Users who like things lightweight, modular, and fast
 
@@ -74,13 +75,8 @@ cd ~/butterscripts
 
 **JustAGuy Linux**  
 🎥 [YouTube](https://youtube.com/@JustAGuyLinux)  
-🌐 [butterbeanlinux.com](https://butterbeanlinux.com) ・ [butterbian.com](https://butterbian.com)
 
 ---
 
 More scripts coming soon. Use what you need, fork what you like, tweak everything.
 ```
-
----
-
-Want me to generate a ready-to-upload structure with folders and this README in place?
