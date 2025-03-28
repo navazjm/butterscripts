@@ -1,8 +1,6 @@
 # 🧈 butterscripts
 
-A modular collection of scripts I use across my Debian setups — minimal, practical, and built to pair with [Butter Bean Linux](https://butterbeanlinux.com). These scripts automate installs, configure tools, apply theming, and tweak the system just how I like it.
-
-> Works great on Butter Bean Linux, but useful on any clean Debian install.
+A modular collection of scripts I use across my Debian setups — minimal and practical. These scripts automate installs, configure tools, apply theming, and tweak the system just how I like it.
 
 ---
 
