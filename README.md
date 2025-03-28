@@ -1,62 +1,86 @@
 # 🧈 butterscripts
 
-A personal collection of scripts used across my Debian setups — minimal, modular, and made to pair with [Butter Bean Linux](https://butterbeanlinux.com). These scripts automate installs, apply system tweaks, and handle theming and configuration.
+A modular collection of scripts I use across my Debian setups — minimal, practical, and built to pair with [Butter Bean Linux](https://butterbeanlinux.com). These scripts automate installs, configure tools, apply theming, and tweak the system just how I like it.
 
-## 🗂️ Script Categories
+> Works great on Butter Bean Linux, but useful on any clean Debian install.
 
-### ⚙️ System Setup
+---
 
-- `add_bashrc.sh` – Appends custom `.bashrc` settings
+## 📁 Categories
+
+### 🛠 system/
+
+System-level setup and configuration.
+
+- `add_bashrc.sh` – Appends custom `.bashrc` entries
 - `bluetooth.sh` – Installs and configures Bluetooth support
-- `lightdm.sh` – Sets up LightDM and applies Arctica greeter theme
-- `printers.sh` – Installs CUPS and common printer drivers
-- `nerdfonts.sh` – Installs JetBrainsMono Nerd Font
+- `lightdm.sh` – Sets up LightDM with Arctica greeter
+- `printers.sh` – Installs CUPS and basic printer drivers
 
-### 🌐 Browser & Comms
+### 🌐 apps/
 
-- `firefox-latest.sh` – Installs latest Firefox binary
-- `librewolf-install.sh` – Installs LibreWolf via `.deb`
-- `discord.sh` – Installs Discord manually from the tarball
+Binary installs and user-facing applications.
 
-### 🖥 Terminals & Tools
+- `firefox-latest.sh` – Installs the latest Firefox tarball
+- `librewolf-install.sh` – Installs LibreWolf `.deb`
+- `discord.sh` – Installs Discord manually from tarball
+- `wezterm.sh` – Installs WezTerm `.deb` and config
+- `fastfetch.sh` – Builds Fastfetch from source and applies config
+- `neovim.sh` – Installs Neovim `.deb` and my custom config
 
-- `wezterm.sh` – Installs latest WezTerm `.deb` and config
-- `fastfetch.sh` – Builds and installs Fastfetch + config from `jag_dots`
-- `neovim.sh` – Installs Neovim from `.deb` and offers my config
-- `geany-projects.sh` – Creates quick-start project structure for Geany
+### 🧩 config/
 
-### 🎨 Appearance
+Dev environment helpers.
+
+- `geany-projects.sh` – Sets up project folder structure for Geany
+
+### 🎨 theming/
+
+Desktop theming and GTK configuration.
 
 - `install-theme.sh` – Installs Orchis GTK and Colloid icon themes
+- `gtk-settings.sh` – Applies GTK2/GTK3 theme and appearance settings
+- `nerdfonts.sh` – Installs JetBrainsMono Nerd Font
+
+---
 
 ## 🚀 Getting Started
 
-Clone the repo and run scripts manually:
+Clone the repo and run what you need:
 
 ```bash
 git clone https://github.com/drewgrif/butterscripts ~/butterscripts
 cd ~/butterscripts
-chmod +x *.sh  # if needed
 
-./fastfetch.sh
-./install-theme.sh
+# Example usage:
+./apps/wezterm.sh
+./theming/install-theme.sh
+./system/bluetooth.sh
 ```
 
-You can mix and match scripts for your own post-install workflow or custom Debian-based builds.
+---
 
-## 🧈 Designed For
+## 🧈 Built For
 
-- Butter Bean (butterbian)Linux (and other Debian-based systems).  This is a joke... for now.
-- Tiling + floating WM setups (Openbox, BSPWM, etc.)
-- Minimal users who want full control with clean defaults
+- **Butter Bean Linux** (and other Debian-based systems)
+- Window manager setups (BSPWM, Openbox, etc.)
+- Users who like things lightweight, modular, and fast
+
+> Butterbian Linux is a joke... for now.
+
+---
 
 ## 📫 Author
 
 **JustAGuy Linux**  
 🎥 [YouTube](https://youtube.com/@JustAGuyLinux)  
+🌐 [butterbeanlinux.com](https://butterbeanlinux.com) ・ [butterbian.com](https://butterbian.com)
 
 ---
 
-More scripts coming soon. Use what you need, tweak what you want.
+More scripts coming soon. Use what you need, fork what you like, tweak everything.
 ```
 
+---
+
+Want me to generate a ready-to-upload structure with folders and this README in place?
