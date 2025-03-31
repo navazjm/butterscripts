@@ -1,47 +1,35 @@
-#!/usr/bin/env bash
-
-# ============================================
-# Install Fastfetch
-# ============================================
-
+#!/bin/bash
 set -e
-
-INSTALL_DIR="$HOME/.local/src"
-
-die() {
-    echo "$1"
-    exit 1
-}
+# fastfetch.sh: Install and configure Fastfetch
 
 command_exists() {
-    command -v "$1" >/dev/null 2>&1
+    command -v "$1" &>/dev/null
 }
 
-install_fastfetch() {
-    if command_exists fastfetch; then
-        echo "Fastfetch is already installed. Skipping installation."
-        return
-    fi	
+read -p "Install Fastfetch? (y/n): " confirm
+[[ ! "$confirm" =~ ^[Yy]$ ]] && {
+    echo "Skipping Fastfetch."
+    exit 0
+}
 
-    echo "Installing Fastfetch..."
-    mkdir -p "$INSTALL_DIR"
-    git clone https://github.com/fastfetch-cli/fastfetch "$INSTALL_DIR/fastfetch" || die "Failed to clone Fastfetch."
+INSTALL_DIR="${INSTALL_DIR:-/tmp/install-fastfetch}"
+mkdir -p "$INSTALL_DIR"
+
+if command_exists fastfetch; then
+    echo "Fastfetch is already installed. Skipping build."
+else
+    echo "Building Fastfetch..."
+    git clone https://github.com/fastfetch-cli/fastfetch "$INSTALL_DIR/fastfetch"
     cd "$INSTALL_DIR/fastfetch"
     cmake -S . -B build
     cmake --build build
     sudo mv build/fastfetch /usr/local/bin/
-    echo "Fastfetch installation complete."
-    
-    echo "Setting up Fastfetch configuration..."
-    mkdir -p "$HOME/.config/fastfetch"
+    echo "Fastfetch installed."
+fi
 
-    git clone --depth=1 --filter=blob:none --sparse "https://github.com/drewgrif/jag_dots.git" "$HOME/tmp_jag_dots"
-    cd "$HOME/tmp_jag_dots"
-    git sparse-checkout set .config/fastfetch
-    mv .config/fastfetch "$HOME/.config/"
+echo "Setting up Fastfetch config..."
+mkdir -p "$HOME/.config/fastfetch"
+curl -fsSL https://raw.githubusercontent.com/drewgrif/jag_dots/main/.config/fastfetch/config.json \
+    -o "$HOME/.config/fastfetch/config.json"
 
-    cd && rm -rf "$HOME/tmp_jag_dots"
-    echo "Fastfetch configuration setup complete."
-}
-
-install_fastfetch
+echo "Fastfetch configuration complete."
