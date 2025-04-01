@@ -2,6 +2,8 @@
 set -e
 # 99-optional-tools.sh: Interactive selector for optional apps and tools
 
+clear
+
 install_packages() {
     sudo apt install -y "$@"
 }
