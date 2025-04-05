@@ -29,7 +29,7 @@ fi
 
 echo "Setting up Fastfetch config..."
 mkdir -p "$HOME/.config/fastfetch"
-curl -fsSL https://raw.githubusercontent.com/drewgrif/jag_dots/main/.config/fastfetch/config.json \
+curl -fsSL https://raw.githubusercontent.com/drewgrif/jag_dots/main/.config/fastfetch/config.jsonc \
     -o "$HOME/.config/fastfetch/config.json"
 
 echo "Fastfetch configuration complete."
