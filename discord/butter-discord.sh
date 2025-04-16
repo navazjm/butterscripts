@@ -96,13 +96,6 @@ setup_user_environment() {
 # Function to clean up old Discord installation
 cleanup() {
     echo "Cleaning up old Discord installation..."
-    echo "This will remove the existing Discord installation."
-    read -p "Do you want to proceed? (y/n): " confirm
-    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-        echo "Cleanup aborted."
-        return 1
-    fi
-    
     sudo rm -rf "$DISCORD_DIR"
     sudo rm -f "$DISCORD_BIN"
     sudo rm -f "$DESKTOP_FILE"
@@ -111,11 +104,14 @@ cleanup() {
 
 # Function to install or update Discord
 install_discord() {
-    echo "This will install/update Discord on your system."
-    read -p "Do you want to proceed? (y/n): " confirm
-    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-        echo "Installation aborted."
-        return 1
+    # If this is a fresh install (not an update), ask for confirmation
+    if [ ! -d "$DISCORD_DIR" ] && [ ! -f "$DISCORD_BIN" ]; then
+        echo "This will install Discord on your system."
+        read -p "Do you want to proceed? (y/n): " confirm
+        if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+            echo "Installation aborted."
+            return 1
+        fi
     fi
     
     echo "Retrieving the latest Discord tar.gz file..."
@@ -156,11 +152,8 @@ uninstall_discord() {
         return 1
     fi
     
-    if cleanup; then
-        echo "Discord has been uninstalled."
-    else
-        echo "Uninstallation was cancelled."
-    fi
+    cleanup
+    echo "Discord has been uninstalled."
 }
 
 # Show help message
@@ -177,19 +170,17 @@ show_help() {
     echo ""
     echo "If no option is provided, the script will install or update Discord."
     echo ""
-    echo "Note: This script will ask for confirmation before making any changes"
-    echo "to your system or configuration files."
+    echo "Note: This script will ask for confirmation before making changes"
+    echo "to your system or configuration files during setup and first install."
 }
 
 # Main script logic
 case "$1" in
     install|update|"")
         if [ -d "$DISCORD_DIR" ] || [ -f "$DISCORD_BIN" ]; then
-            if cleanup; then
-                install_discord
-            else
-                echo "Update/install cancelled."
-            fi
+            echo "Updating existing Discord installation..."
+            cleanup
+            install_discord
         else
             install_discord
         fi
