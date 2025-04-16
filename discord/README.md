@@ -26,12 +26,13 @@ cd butterscripts/discord
 # Make executable
 chmod +x butter-discord.sh
 
-# Setup script in your environment
-./butter-discord.sh setup
 ```
 
 ## Usage
 ```bash
+# Setup script in your environment
+./butter-discord.sh setup
+
 # Install or update Discord
 butter-discord
 
