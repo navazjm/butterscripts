@@ -23,13 +23,13 @@ fi
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
-# Clone the repository
-echo "🔄 Cloning JustAGuyLinux Neovim repository..."
+# Clone the NVIM configuration repository
+echo "🔄 Cloning JustAGuyLinux Neovim configuration repository..."
 git clone https://github.com/drewgrif/nvim.git
 
 # Install the Debian package
 echo "📦 Installing Neovim Debian package..."
-if [ -f "nvim/nvim-linux64-x86_64.deb" ]; then
+if [ -f "nvim/nvim-linux-x86_64.deb" ]; then
     sudo dpkg -i nvim/nvim-linux-x86_64.deb
     # Install dependencies if the dpkg command failed
     if [ $? -ne 0 ]; then
@@ -39,7 +39,14 @@ if [ -f "nvim/nvim-linux64-x86_64.deb" ]; then
     fi
 else
     echo "❌ Error: Neovim Debian package not found in the repository."
-    exit 1
+    echo "📥 Downloading latest Neovim stable release instead..."
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb -O nvim-linux64.deb
+    sudo dpkg -i nvim-linux64.deb
+    if [ $? -ne 0 ]; then
+        echo "🔧 Fixing dependencies..."
+        sudo apt --fix-broken install -y
+        sudo dpkg -i nvim-linux64.deb
+    fi
 fi
 
 # Back up existing Neovim configuration if it exists
