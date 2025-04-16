@@ -26,10 +26,10 @@ git clone https://github.com/drewgrif/butterscripts.git
 cd butterscripts/discord
 
 # Make executable
-chmod +x butter-discord.sh
+chmod +x butterdis.sh
 
 # Setup script in your environment
-./butter-discord.sh setup
+./butterdis.sh setup
 
 ```
 

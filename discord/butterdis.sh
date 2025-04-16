@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables
-SCRIPT_NAME="butter-discord"
+SCRIPT_NAME="butterdis"
 LOCAL_BIN_DIR="$HOME/.local/bin"
 DISCORD_DIR="/opt/Discord"
 DISCORD_BIN="/usr/bin/Discord"

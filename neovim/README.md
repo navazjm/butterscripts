@@ -43,10 +43,10 @@ git clone https://github.com/drewgrif/butterscripts.git
 cd butterscripts/neovim
 
 # Make scripts executable
-chmod +x butter-nvim.sh build-neovim.sh
+chmod +x buttervim.sh build-neovim.sh
 
 # Run either the configuration installer
-./butter-nvim.sh
+./buttervim.sh
 
 # OR build from source
 ./build-neovim.sh
@@ -54,7 +54,7 @@ chmod +x butter-nvim.sh build-neovim.sh
 
 ## Which Script Should I Use?
 
-- **Use butter-nvim.sh if:**
+- **Use buttervim.sh if:**
   - You want JustAGuyLinux's pre-configured Neovim setup
   - You prefer a quick and easy installation
   - You want plugins and settings already configured
@@ -83,7 +83,7 @@ The configuration includes:
 
 ## How It Works
 
-### butter-nvim.sh:
+### buttervim.sh:
 1. Downloads the pre-built Neovim Debian package
 2. Installs it on your system
 3. Backs up any existing Neovim configuration

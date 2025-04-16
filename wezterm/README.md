@@ -20,9 +20,9 @@ git clone https://github.com/drewgrif/butterscripts.git
 # Navigate to wezterm directory
 cd butterscripts/wezterm
 # Make executable
-chmod +x install-wezterm.sh
+chmod +x butterwez.sh
 # Run the installer
-./install-wezterm.sh
+./butterwez.sh
 ```
 
 ## How It Works
