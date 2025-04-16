@@ -2,6 +2,8 @@
 
 A simple Discord installer and updater for Linux systems.
 
+> **Note:** The setup process will ask for permission before modifying your shell configuration files. You can decline and manually add ~/.local/bin to your PATH if preferred.
+
 ## Features
 - Installs and updates Discord with a single command
 - Works with Bash, Zsh, Fish, and other shells
@@ -26,13 +28,13 @@ cd butterscripts/discord
 # Make executable
 chmod +x butter-discord.sh
 
+# Setup script in your environment
+./butter-discord.sh setup
+
 ```
 
 ## Usage
 ```bash
-# Setup script in your environment
-./butter-discord.sh setup
-
 # Install or update Discord
 butter-discord
 
