@@ -67,18 +67,19 @@ chmod +x butter-nvim.sh build-neovim.sh
 
 ## About JustAGuyLinux's Neovim Configuration
 
-The butter-nvim.sh script installs JustAGuyLinux's Neovim configuration, which is designed to be lightweight, modular, and fast. For complete documentation and to learn more about the features, visit:
-https://github.com/drewgrif/nvim
-The configuration includes:
+The `butter-nvim.sh` script installs JustAGuyLinux's Neovim configuration, which is designed to be lightweight, modular, and fast. For complete documentation and to learn more about the features, visit:
 
-🚀 Minimal, fast, and intuitive setup optimized for startup speed
-📝 Specially designed for Markdown writing, scripting, and everyday editing
-🧘 Clean visuals and distraction-free editing experience
-⚡ Lightweight design without unnecessary bloat
-⌨️ Keyboard-first workflow with sensible keybindings
-🔌 Carefully selected plugins that maintain performance
-🎯 No LSPs or heavy language tooling that slow things down
-📊 Optional Markdown enhancements for writers
+[https://github.com/drewgrif/nvim](https://github.com/drewgrif/nvim)
+
+The configuration includes:
+- 🚀 Minimal, fast, and intuitive setup optimized for startup speed
+- 📝 Specially designed for Markdown writing, scripting, and everyday editing
+- 🧘 Clean visuals and distraction-free editing experience
+- ⚡ Lightweight design without unnecessary bloat
+- ⌨️ Keyboard-first workflow with sensible keybindings
+- 🔌 Carefully selected plugins that maintain performance
+- 🎯 No LSPs or heavy language tooling that slow things down
+- 📊 Optional Markdown enhancements for writers
 
 ## How It Works
 
