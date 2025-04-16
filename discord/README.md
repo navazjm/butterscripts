@@ -75,4 +75,3 @@ Made for Linux Discord users who want simple installation and updates.
 ---
 
 More scripts coming soon. Use what you need, fork what you like, tweak everything.
-```

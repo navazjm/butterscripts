@@ -65,6 +65,20 @@ chmod +x butter-nvim.sh build-neovim.sh
   - You need performance optimizations from building from source
   - You want to ensure you have the absolute latest version
 
+## About JustAGuyLinux's Neovim Configuration
+
+The `butter-nvim.sh` script installs JustAGuyLinux's Neovim configuration, which is designed to be lightweight, modular, and fast. For complete documentation and to learn more about the features, visit:
+
+[https://github.com/drewgrif/nvim](https://github.com/drewgrif/nvim)
+
+The configuration includes:
+- Modern plugin system
+- Syntax highlighting and code completion
+- File navigation and project management
+- Clean, intuitive interface
+- Custom keybindings and shortcuts
+- Support for various programming languages
+
 ## How It Works
 
 ### butter-nvim.sh:
@@ -104,4 +118,3 @@ Made for Linux users who want simple Neovim installation options.
 ---
 
 More scripts coming soon. Use what you need, fork what you like, tweak everything.
-```
