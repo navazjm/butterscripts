@@ -29,13 +29,13 @@ git clone https://github.com/drewgrif/nvim.git
 
 # Install the Debian package
 echo "📦 Installing Neovim Debian package..."
-if [ -f "nvim/nvim-linux64.deb" ]; then
-    sudo dpkg -i nvim/nvim-linux64.deb
+if [ -f "nvim/nvim-linux64-x86_64.deb" ]; then
+    sudo dpkg -i nvim/nvim-linux-x86_64.deb
     # Install dependencies if the dpkg command failed
     if [ $? -ne 0 ]; then
         echo "🔧 Fixing dependencies..."
         sudo apt --fix-broken install -y
-        sudo dpkg -i nvim/nvim-linux64.deb
+        sudo dpkg -i nvim/nvim-linux-x86_64.deb
     fi
 else
     echo "❌ Error: Neovim Debian package not found in the repository."
