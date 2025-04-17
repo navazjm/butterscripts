@@ -14,16 +14,17 @@ The repository is organized into the following directories:
 
 ### `/browsers`
 
-Contains scripts for browser installation.  Access these scripts at [https://github.com/drewgrif/butterscripts/browsers](https://github.com/drewgrif/butterscripts/browsers).
-
+- [README](https://github.com/drewgrif/butterscripts/tree/main/browsers)
 - **firefox**: Firefox latest
 - **vivaldi**: Vivaldi
 - **zen**: Zen browser
 - **more**
 
-### `/discord` [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord)
+---
 
-Scripts for Discord installation. 
+### `/discord` 
+
+Scripts for Discord installation. Access these scripts at [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord).
 
 ### `/desktop`
 
