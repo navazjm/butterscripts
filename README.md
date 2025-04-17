@@ -46,6 +46,14 @@ The repository is organized into the following directories:
 
 ---
 
+### `/theming`
+
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/theming)
+- **nerdfonts**: Installs curated list of popular Nerd Fonts.
+- **install-theme**: Installs my favorite GTK theme and Dracula Dark icon theme
+
+---
+
 ### `/wezterm`
 
 - [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/wezterm)
