@@ -1,0 +1,82 @@
+#!/bin/bash
+set -e
+# fastfetch.sh: Install and configure Fastfetch with additional configuration files
+
+command_exists() {
+    command -v "$1" &>/dev/null
+}
+
+read -p "Install Fastfetch? (y/n): " confirm
+[[ ! "$confirm" =~ ^[Yy]$ ]] && {
+    echo "Skipping Fastfetch."
+    exit 0
+}
+
+INSTALL_DIR="${INSTALL_DIR:-/tmp/install-fastfetch}"
+mkdir -p "$INSTALL_DIR"
+
+# Step 1: Install fastfetch if not already installed
+if command_exists fastfetch; then
+    echo "Fastfetch is already installed. Skipping build."
+else
+    echo "Building Fastfetch..."
+    git clone https://github.com/fastfetch-cli/fastfetch "$INSTALL_DIR/fastfetch"
+    cd "$INSTALL_DIR/fastfetch"
+    cmake -S . -B build
+    cmake --build build
+    sudo mv build/fastfetch /usr/local/bin/
+    echo "Fastfetch installed."
+fi
+
+# Step 2: Create configuration directory
+echo "Setting up Fastfetch config..."
+mkdir -p "$HOME/.config/fastfetch"
+
+# Step 3: Copy the three configuration files
+echo "Copying configuration files..."
+
+# Assuming the three jsonc files are in the same directory as this script
+script_dir="$(dirname "$(readlink -f "$0")")"
+
+# Copy all configuration files to the main fastfetch config directory
+cp "$script_dir/config.jsonc" "$HOME/.config/fastfetch/"
+cp "$script_dir/minimal.jsonc" "$HOME/.config/fastfetch/"
+cp "$script_dir/server.jsonc" "$HOME/.config/fastfetch/"
+
+# Step 4: Create an alias for fastfetch based on detected shell
+echo "Setting up shell alias..."
+
+# Check which shells are configured
+if [ -f "$HOME/.bashrc" ]; then
+    if ! grep -q "alias ff=" "$HOME/.bashrc"; then
+        echo "# Fastfetch alias" >> "$HOME/.bashrc"
+        echo "alias ff='fastfetch'" >> "$HOME/.bashrc"
+        echo "Added 'ff' alias to .bashrc"
+    fi
+fi
+
+if [ -f "$HOME/.zshrc" ]; then
+    if ! grep -q "alias ff=" "$HOME/.zshrc"; then
+        echo "# Fastfetch alias" >> "$HOME/.zshrc"
+        echo "alias ff='fastfetch'" >> "$HOME/.zshrc"
+        echo "Added 'ff' alias to .zshrc"
+    fi
+fi
+
+if [ -d "$HOME/.config/fish" ]; then
+    fish_alias_path="$HOME/.config/fish/functions/ff.fish"
+    if [ ! -f "$fish_alias_path" ]; then
+        mkdir -p "$(dirname "$fish_alias_path")"
+        echo "function ff" > "$fish_alias_path"
+        echo "    fastfetch \$argv" >> "$fish_alias_path"
+        echo "end" >> "$fish_alias_path"
+        echo "Added 'ff' function to fish shell"
+    fi
+fi
+
+echo "Fastfetch configuration complete."
+echo "Available configuration presets:"
+echo "  - Default: fastfetch"
+echo "  - Minimal: fastfetch -c ~/.config/fastfetch/minimal.jsonc"
+echo "  - Server: fastfetch -c ~/.config/fastfetch/server.jsonc"
+echo "You can also use the 'ff' alias for the default configuration."
