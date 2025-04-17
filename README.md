@@ -21,9 +21,9 @@ Contains scripts for browser installation.  Access these scripts at [https://git
 - **zen**: Zen browser
 - **more**
 
-### `/discord`
+### `/discord` [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord)
 
-Scripts for Discord installation. Access these scripts at [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord).
+Scripts for Discord installation. 
 
 ### `/desktop`
 
