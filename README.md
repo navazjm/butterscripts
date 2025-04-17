@@ -14,7 +14,7 @@ The repository is organized into the following directories:
 
 ### `/browsers`
 
-- [README](https://github.com/drewgrif/butterscripts/tree/main/browsers)
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/browsers)
 - **firefox**: Firefox latest
 - **vivaldi**: Vivaldi
 - **zen**: Zen browser
