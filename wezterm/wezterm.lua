@@ -155,11 +155,37 @@ local binds = {
 --------------------------------------------------------------------------------
 local config = wezterm.config_builder()
 
+-- Set default program (shell) - important for Starship compatibility
+config.default_prog = { os.getenv("SHELL") or "/bin/bash" }
+
 -- Window appearance
 config.window_background_opacity = 0.95
 config.font_size = 18
 config.line_height = 1.1
-config.font = wezterm.font('SauceCodePro Nerd Font Mono', { weight = 'Regular', italic = false })
+
+-- Font configuration with fallbacks for Starship
+config.font = wezterm.font_with_fallback({
+  -- Primary font
+  {
+    family = 'SauceCodePro Nerd Font Mono',
+    weight = 'Regular',
+    italic = false,
+  },
+  -- Fallback fonts with good symbol coverage for Starship
+  { family = 'FiraCode Nerd Font Mono', weight = 'Regular' },
+  { family = 'JetBrainsMono Nerd Font Mono', weight = 'Regular' },
+  { family = 'Hack Nerd Font Mono', weight = 'Regular' },
+  { family = 'CascadiaCode Nerd Font Mono', weight = 'Regular' },
+  { family = 'RobotoMono Nerd Font Mono', weight = 'Regular' },
+  { family = 'Meslo Nerd Font Mono', weight = 'Regular' },
+  { family = 'UbuntuMono Nerd Font Mono', weight = 'Regular' },
+  { family = 'Inconsolata Nerd Font Mono', weight = 'Regular' },
+  { family = 'VictorMono Nerd Font Mono', weight = 'Regular' },
+  { family = 'Mononoki Nerd Font Mono', weight = 'Regular' },
+  { family = 'Terminus Nerd Font Mono', weight = 'Regular' },
+  -- Last resort symbol-only font
+  { family = 'Symbols Nerd Font Mono', weight = 'Regular' },
+})
 
 -- If you want a custom color scheme rather than color_scheme = "NameHere"
 config.colors = {
@@ -240,6 +266,7 @@ config.mouse_bindings = {
   },
 }
 
+-- Disable missing glyph warnings, since we have fallback fonts now
 config.warn_about_missing_glyphs = false
 
 return config
