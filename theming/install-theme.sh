@@ -4,55 +4,84 @@
 # Install GTK Theme & Icons
 # ============================================
 
-set -e
+# Set color variables for better readability
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
+# Set fixed configuration
 INSTALL_DIR="$HOME/.local/src"
 GTK_THEME="https://github.com/vinceliuice/Orchis-theme"
 ICON_THEME="https://github.com/vinceliuice/Colloid-icon-theme"
+GTK_THEME_NAME="Orchis-Grey-Dark"
+ICON_THEME_NAME="Colloid-Grey-Dracula-Dark"
 
+# Function to display error and exit
 die() {
-    echo "$1"
+    echo -e "${RED}ERROR: $1${NC}" >&2
     exit 1
 }
 
-install_theming() {
-    GTK_THEME_NAME="Orchis-Grey-Dark"
-    ICON_THEME_NAME="Colloid-Grey-Dracula-Dark"
+# Function to check dependencies
+check_dependencies() {
+    echo -e "${BLUE}Checking dependencies...${NC}"
+    
+    # Check for git
+    if ! command -v git &> /dev/null; then
+        echo -e "${YELLOW}Git is not installed. Attempting to install...${NC}"
+        sudo apt install -y git || die "Failed to install git. Please install it manually."
+    fi
+    
+    echo -e "${GREEN}Dependencies satisfied.${NC}"
+}
 
-    if [ -d "$HOME/.themes/$GTK_THEME_NAME" ] || [ -d "$HOME/.icons/$ICON_THEME_NAME" ]; then
-        echo "One or more themes/icons already installed. Skipping theming installation."
+# Function to install themes
+install_theming() {
+    if [ -d "$HOME/.themes/$GTK_THEME_NAME" ] && [ -d "$HOME/.icons/$ICON_THEME_NAME" ]; then
+        echo -e "${YELLOW}Themes already installed. Skipping theming installation.${NC}"
         return
     fi
 
-    echo "Installing GTK and Icon themes..."
+    echo -e "${BLUE}Installing GTK and Icon themes...${NC}"
     mkdir -p "$INSTALL_DIR"
 
     # GTK Theme Installation
+    echo -e "${BLUE}Cloning Orchis theme...${NC}"
     git clone "$GTK_THEME" "$INSTALL_DIR/Orchis-theme" || die "Failed to clone Orchis theme."
     cd "$INSTALL_DIR/Orchis-theme" || die "Failed to enter Orchis theme directory."
-    yes | ./install.sh -c dark -t default grey teal orange --tweaks black
+    
+    echo -e "${BLUE}Installing Orchis theme with grey, teal, and orange variants${NC}"
+    yes | ./install.sh -c dark -t default grey teal orange --tweaks black || {
+        echo -e "${RED}Orchis theme installation failed.${NC}"
+        exit 1
+    }
 
     # Icon Theme Installation
+    echo -e "${BLUE}Cloning Colloid icon theme...${NC}"
     git clone "$ICON_THEME" "$INSTALL_DIR/Colloid-icon-theme" || die "Failed to clone Colloid icon theme."
     cd "$INSTALL_DIR/Colloid-icon-theme" || die "Failed to enter Colloid icon theme directory."
-    ./install.sh -t teal orange grey default -s default gruvbox everforest dracula
+    
+    echo -e "${BLUE}Installing Colloid icon theme...${NC}"
+    ./install.sh -t teal orange grey default -s default gruvbox everforest dracula || {
+        echo -e "${RED}Colloid icon theme installation failed.${NC}"
+        exit 1
+    }
 
-    echo "Theming installation complete."
+    echo -e "${GREEN}Theming installation complete.${NC}"
 }
 
-# ========================================
-# GTK Theme Settings
-# ========================================
-
+# Function to apply theme settings
 change_theming() {
-    echo "Applying GTK theme settings..."
+    echo -e "${BLUE}Applying GTK theme settings...${NC}"
 
     mkdir -p ~/.config/gtk-3.0
 
     cat << EOF > ~/.config/gtk-3.0/settings.ini
 [Settings]
-gtk-theme-name=Orchis-Grey-Dark
-gtk-icon-theme-name=Colloid-Grey-Dracula-Dark
+gtk-theme-name=$GTK_THEME_NAME
+gtk-icon-theme-name=$ICON_THEME_NAME
 gtk-font-name=Sans 10
 gtk-cursor-theme-name=Adwaita
 gtk-cursor-theme-size=0
@@ -68,8 +97,8 @@ gtk-xft-hintstyle=hintfull
 EOF
 
     cat << EOF > ~/.gtkrc-2.0
-gtk-theme-name="Orchis-Grey-Dark"
-gtk-icon-theme-name="Colloid-Grey-Dracula-Dark"
+gtk-theme-name="$GTK_THEME_NAME"
+gtk-icon-theme-name="$ICON_THEME_NAME"
 gtk-font-name="Sans 10"
 gtk-cursor-theme-name="Adwaita"
 gtk-cursor-theme-size=0
@@ -84,9 +113,27 @@ gtk-xft-hinting=1
 gtk-xft-hintstyle="hintfull"
 EOF
 
-    echo "GTK settings updated."
+    echo -e "${GREEN}GTK settings updated.${NC}"
 }
 
-# Run both steps
+# Handle script interruption
+cleanup_incomplete() {
+    echo -e "\n${YELLOW}Script interrupted. Cleaning up...${NC}"
+    exit 1
+}
+
+# Set the trap for SIGINT (Ctrl+C)
+trap cleanup_incomplete SIGINT
+
+# Main execution
+echo -e "${BLUE}=== GTK Theme & Icons Installer ===${NC}"
+
+# Check dependencies first
+check_dependencies
+
+# Run installation steps
 install_theming
 change_theming
+
+echo -e "${GREEN}Installation and configuration completed successfully!${NC}"
+echo -e "${YELLOW}You may need to log out and log back in for changes to take effect.${NC}"
