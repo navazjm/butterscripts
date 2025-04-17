@@ -73,4 +73,3 @@ Thanks to all contributors and the open source community for inspiration and cod
 ---
 
 More scripts coming soon. Use what you need, fork what you like, tweak everything.
-```
