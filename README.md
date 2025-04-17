@@ -4,61 +4,88 @@ A modular collection of scripts I use across my Debian setups — minimal and pr
 
 ---
 
-## 📁 Categories
+## Overview
 
-### 🛠 system/
+Butterscripts is a collection of utility scripts that help streamline various tasks in Linux. These scripts are organized into different directories based on their functionality and purpose, making it easy to find the script you need.
 
-System-level setup and configuration.
+## Repository Structure
 
-- `add_bashrc.sh` – Appends custom `.bashrc` entries
-- `bluetooth.sh` – Installs and configures Bluetooth support
-- `lightdm.sh` – Sets up LightDM with Arctica greeter
-- `printers.sh` – Installs CUPS and basic printer drivers
+The repository is organized into the following directories:
 
-### 🌐 apps/
+### `/browsers`
 
-Binary installs and user-facing applications.
+Contains scripts for browser installation.  Access these scripts at [https://github.com/drewgrif/butterscripts/browsers](https://github.com/drewgrif/butterscripts/browsers).
 
-- `firefox-latest.sh` – Installs the latest Firefox tarball
-- `librewolf-install.sh` – Installs LibreWolf `.deb`
-- `discord.sh` – Installs Discord manually from tarball
-- `wezterm.sh` – Installs WezTerm `.deb` and config
-- `fastfetch.sh` – Builds Fastfetch from source and applies config
-- `neovim.sh` – Installs Neovim `.deb` and my custom config
-- `lazygit.sh` - Installs the latest version of lazygit
+- **firefox**: Firefox latest
+- **vivaldi**: Vivaldi
+- **zen**: Zen browser
+- **more**
 
-### 🧩 config/
+### `/discord`
 
-Dev environment helpers.
+Scripts for Discord installation. Access these scripts at [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord).
 
-- `geany-projects.sh` – Sets up project folder structure for Geany
+### `/desktop`
 
-### 🎨 theming/
+Scripts related to desktop environments and window managers.
 
-Desktop theming and GTK configuration.
+- **themes**: Scripts for installing and configuring themes
+- **keyboard**: Keyboard shortcuts and configuration scripts
+- **menu**: Menu generation and configuration scripts
+- **display**: Scripts for managing displays and monitor setup
 
-- `install-theme.sh` – Installs Orchis GTK and Colloid icon themes
-- `gtk-settings.sh` – Applies GTK2/GTK3 theme and appearance settings
-- `nerdfonts.sh` – Installs JetBrainsMono Nerd Font
+### `/media`
 
----
+Media handling scripts.
 
-## 🚀 Getting Started
+- **audio**: Scripts for audio manipulation and management
+- **video**: Video conversion and processing scripts
+- **image**: Image manipulation tools
 
-Clone the repo and run what you need:
+### `/network`
+
+Networking related scripts.
+
+- **wifi**: Scripts for managing WiFi connections
+- **firewall**: Firewall configuration scripts
+- **sharing**: Network file sharing utilities
+
+### `/utilities`
+
+General utility scripts.
+
+- **file_management**: Scripts for file organization and management
+- **text_processing**: Text manipulation utilities
+- **time_savers**: Productivity enhancing scripts
+
+## Usage
+
+Most scripts can be executed directly after making them executable:
 
 ```bash
-git clone https://github.com/drewgrif/butterscripts ~/butterscripts
-cd ~/butterscripts
-
-# Example usage:
-./apps/wezterm.sh
-./theming/install-theme.sh
-./system/bluetooth.sh
+chmod +x script_name.sh
+./script_name.sh
 ```
 
----
+Some scripts may require root privileges or additional configuration.
 
+## Requirements
+
+- Linux-based operating system (tested on Debian-based distributions)
+- Bash shell
+- Various dependencies as required by individual scripts
+
+## Contributing
+
+Contributions are welcome! If you have scripts that would fit well in this collection, please feel free to submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+Thanks to all contributors and the open source community for inspiration and code references.
 ## 🧈 Built For
 
 - **Butter Bean (butterbian) Linux** (and other Debian-based systems)
