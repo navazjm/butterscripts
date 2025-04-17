@@ -58,6 +58,16 @@ General utility scripts.
 - **text_processing**: Text manipulation utilities
 - **time_savers**: Productivity enhancing scripts
 
+## 📁 Project Structure
+
+| Directory | Purpose | Example Scripts \& Descriptions |
+| :-- | :-- | :-- |
+| `browsers/` | Application installs and user-facing tools | `firefox-latest.sh` (latest Firefox), `librewolf-install.sh` (LibreWolf), etc. |
+| `discord/` | Discord installation | `butterdis.sh` ([https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord) |
+| `theming/` | Desktop theming and GTK configuration | `install-theme.sh` (Orchis GTK \& Colloid icons), `gtk-settings.sh` (GTK theming), `nerdfonts.sh` (JetBrainsMono Nerd Font) |
+
+---
+
 ## Usage
 
 Most scripts can be executed directly after making them executable:
