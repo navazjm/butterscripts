@@ -24,77 +24,35 @@ The repository is organized into the following directories:
 
 ### `/discord` 
 
-Scripts for Discord installation. Access these scripts at [https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord).
-
-### `/desktop`
-
-Scripts related to desktop environments and window managers.
-
-- **themes**: Scripts for installing and configuring themes
-- **keyboard**: Keyboard shortcuts and configuration scripts
-- **menu**: Menu generation and configuration scripts
-- **display**: Scripts for managing displays and monitor setup
-
-### `/media`
-
-Media handling scripts.
-
-- **audio**: Scripts for audio manipulation and management
-- **video**: Video conversion and processing scripts
-- **image**: Image manipulation tools
-
-### `/network`
-
-Networking related scripts.
-
-- **wifi**: Scripts for managing WiFi connections
-- **firewall**: Firewall configuration scripts
-- **sharing**: Network file sharing utilities
-
-### `/utilities`
-
-General utility scripts.
-
-- **file_management**: Scripts for file organization and management
-- **text_processing**: Text manipulation utilities
-- **time_savers**: Productivity enhancing scripts
-
-## 📁 Project Structure
-
-| Directory | Purpose | Example Scripts \& Descriptions |
-| :-- | :-- | :-- |
-| `browsers/` | Application installs and user-facing tools | `firefox-latest.sh` (latest Firefox), `librewolf-install.sh` (LibreWolf), etc. |
-| `discord/` | Discord installation | `butterdis.sh` ([https://github.com/drewgrif/butterscripts/discord](https://github.com/drewgrif/butterscripts/discord) |
-| `theming/` | Desktop theming and GTK configuration | `install-theme.sh` (Orchis GTK \& Colloid icons), `gtk-settings.sh` (GTK theming), `nerdfonts.sh` (JetBrainsMono Nerd Font) |
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/discord)
+- **Install**: Discord latest binary and built-in updater.
 
 ---
 
-## Usage
+### `/fastetch`
 
-Most scripts can be executed directly after making them executable:
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/fastfetch)
+- **fastfetch**: fastfetch latest
+- **Auto alias**: for Bash, Zsh, and Fish
+- **3 configurations**: default, minimal and server
 
-```bash
-chmod +x script_name.sh
-./script_name.sh
-```
+---
 
-Some scripts may require root privileges or additional configuration.
+### `/neovim`
 
-## Requirements
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/neovim)
+- **butter-nvim.sh**: Installs Neovim and sets up JustAGuyLinux's configuration
+- **build-neovim.sh**: Builds and installs Neovim from source code
 
-- Linux-based operating system (tested on Debian-based distributions)
-- Bash shell
-- Various dependencies as required by individual scripts
+---
 
-## Contributing
+### `/wezterm`
 
-Contributions are welcome! If you have scripts that would fit well in this collection, please feel free to submit a pull request.
+- [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/wezterm)
+- **butterwez**: Installs wezterm and creates configuration directory.
+- **wezterm.lua**: Curated lua configuration file for wezterm
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
+---
 
 Thanks to all contributors and the open source community for inspiration and code references.
 ## 🧈 Built For
