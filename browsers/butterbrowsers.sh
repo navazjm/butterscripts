@@ -86,8 +86,28 @@ show_menu() {
     done
 }
 
+# Function to check if a package is installed
+is_installed() {
+    if [ -n "$(dpkg -l | grep -E "^ii\s+$1\s+")" ]; then
+        return 0  # Package is installed
+    else
+        return 1  # Package is not installed
+    fi
+}
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 # Function to install Firefox
 install_firefox() {
+    # Check if Firefox is already installed
+    if command_exists firefox && [ -d "/opt/firefox" ]; then
+        echo "Firefox is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Firefox Latest..."
     
     # Define variables
@@ -135,6 +155,12 @@ install_firefox() {
 
 # Function to install LibreWolf
 install_librewolf() {
+    # Check if LibreWolf is already installed
+    if is_installed librewolf; then
+        echo "LibreWolf is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing LibreWolf..."
     
     # Install dependencies
@@ -165,6 +191,12 @@ install_librewolf() {
 
 # Function to install Brave
 install_brave() {
+    # Check if Brave is already installed
+    if is_installed brave-browser; then
+        echo "Brave Browser is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Brave Browser..."
     
     # Install dependencies
@@ -186,6 +218,12 @@ install_brave() {
 
 # Function to install Floorp
 install_floorp() {
+    # Check if Floorp is already installed
+    if is_installed floorp; then
+        echo "Floorp Browser is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Floorp Browser..."
     
     # Install dependencies
@@ -207,6 +245,12 @@ install_floorp() {
 
 # Function to install Vivaldi
 install_vivaldi() {
+    # Check if Vivaldi is already installed
+    if is_installed vivaldi-stable; then
+        echo "Vivaldi Browser is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Vivaldi Browser..."
     
     # Install dependencies
@@ -228,6 +272,12 @@ install_vivaldi() {
 
 # Function to install Thorium
 install_thorium() {
+    # Check if Thorium is already installed
+    if is_installed thorium-browser; then
+        echo "Thorium Browser is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Thorium Browser..."
     
     # Install dependencies
@@ -250,6 +300,12 @@ install_thorium() {
 
 # Function to install Zen Browser
 install_zen() {
+    # Check if Zen Browser is already installed
+    if [ -d "/opt/zen" ] && command_exists zen; then
+        echo "Zen Browser is already installed. Skipping installation."
+        return
+    fi
+    
     echo "Installing Zen Browser..."
     
     # Define variables
@@ -274,9 +330,17 @@ install_zen() {
     sudo tar -xf "$TAR_FILE" -C "$ZEN_DIR" --strip-components=0
     rm "$TAR_FILE"
     
+    # Fix permissions on the zen executable
+    echo "Setting correct permissions on Zen Browser executable..."
+    sudo chmod 755 "$ZEN_DIR/zen"
+    
     # Create symbolic link in /usr/local/bin
     echo "Creating symbolic link in /usr/local/bin..."
     sudo ln -sf "$ZEN_DIR/zen" "$ZEN_BIN"
+    
+    # Set permissions for all users
+    echo "Setting directory permissions..."
+    sudo chmod -R 755 "$ZEN_DIR"
     
     # Create desktop entry
     echo "Creating desktop entry..."
@@ -286,7 +350,7 @@ Name=Zen Browser
 Comment=Experience tranquillity while browsing the web
 GenericName=Web Browser
 Keywords=Internet;WWW;Browser;Web;Explorer
-Exec=zen %u
+Exec=$ZEN_BIN %u
 Terminal=false
 X-MultipleArgs=false
 Type=Application
