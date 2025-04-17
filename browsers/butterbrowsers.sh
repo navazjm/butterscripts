@@ -38,46 +38,9 @@ show_menu() {
         echo "8. All Browsers"
         echo "9. Exit"
         echo "-------------------------------------------"
-        echo "Press Esc to exit at any time"
-        echo "-------------------------------------------"
         
-        # Save current terminal settings
-        old_stty=$(stty -g)
-        
-        # Set terminal to raw mode to capture Escape key
-        stty raw -echo
-        
-        # Display prompt
-        echo -n "Enter your choice(s): "
-        
-        # Read input
-        input=""
-        while true; do
-            char=$(dd bs=1 count=1 2>/dev/null)
-            
-            # Check for ESC key (ASCII 27)
-            if [ "$char" = $'\e' ]; then
-                stty "$old_stty"
-                echo -e "\nExiting..."
-                exit 0
-            fi
-            
-            # Check for Enter key (ASCII 13)
-            if [ "$char" = $'\r' ]; then
-                break
-            fi
-            
-            # For all other characters, add to input
-            if [[ "$char" =~ [0-9\ ] ]]; then
-                input="${input}${char}"
-                echo -n "$char"
-            fi
-        done
-        
-        # Restore terminal settings
-        stty "$old_stty"
-        
-        echo ""
+        # Simple read command with normal terminal behavior
+        read -p "Enter your choice(s): " input
         
         # Check if input is empty
         if [ -z "$input" ]; then
