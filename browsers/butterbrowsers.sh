@@ -22,68 +22,66 @@ ensure_dependencies() {
 
 # Choose browsers to install
 show_menu() {
-    while true; do
-        clear
-        echo "==========================================="
-        echo "  BROWSER INSTALLATION SCRIPTS (DEBIAN)   "
-        echo "==========================================="
-        echo "Enter numbers of browsers to install (separated by spaces):"
-        echo "1. Firefox Latest"
-        echo "2. LibreWolf"
-        echo "3. Brave"
-        echo "4. Floorp"
-        echo "5. Vivaldi"
-        echo "6. Thorium"
-        echo "7. Zen Browser"
-        echo "8. All Browsers"
-        echo "9. Exit"
-        echo "-------------------------------------------"
-        
-        # Simple read command with normal terminal behavior
-        read -p "Enter your choice(s): " input
-        
-        # Check if input is empty
-        if [ -z "$input" ]; then
-            continue
-        fi
-        
-        # Check if user wants to exit with option 9
-        if [[ "$input" == "9" ]]; then
-            echo "Exiting..."
-            exit 0
-        fi
-        
-        # Install all browsers if option 8 is selected
-        if [[ "$input" == "8" ]]; then
-            install_firefox
-            install_librewolf
-            install_brave
-            install_floorp
-            install_vivaldi
-            install_thorium
-            install_zen
-            echo "All browsers have been installed!"
-            read -p "Press Enter to continue or Ctrl+C to exit..."
-            continue
-        fi
-        
-        # Process each selection
-        for choice in $input; do
-            case $choice in
-                1) install_firefox ;;
-                2) install_librewolf ;;
-                3) install_brave ;;
-                4) install_floorp ;;
-                5) install_vivaldi ;;
-                6) install_thorium ;;
-                7) install_zen ;;
-                *) echo "Invalid choice: $choice (skipping)" ;;
-            esac
-        done
-        
-        echo "Selected browsers have been installed!"
-        read -p "Press Enter to continue or Ctrl+C to exit..."
+    clear
+    echo "==========================================="
+    echo "  BROWSER INSTALLATION SCRIPTS (DEBIAN)   "
+    echo "==========================================="
+    echo "Enter numbers of browsers to install (separated by spaces):"
+    echo "1. Firefox Latest"
+    echo "2. LibreWolf"
+    echo "3. Brave"
+    echo "4. Floorp"
+    echo "5. Vivaldi"
+    echo "6. Thorium"
+    echo "7. Zen Browser"
+    echo "8. All Browsers"
+    echo "9. Exit"
+    echo "-------------------------------------------"
+    
+    # Simple read command with normal terminal behavior
+    read -p "Enter your choice(s): " input
+    
+    # Check if input is empty
+    if [ -z "$input" ]; then
+        echo "No selection made. Exiting."
+        exit 0
+    fi
+    
+    # Check if user wants to exit with option 9
+    if [[ "$input" == "9" ]]; then
+        echo "Exiting..."
+        exit 0
+    fi
+    
+    # Install all browsers if option 8 is selected
+    if [[ "$input" == "8" ]]; then
+        install_firefox
+        install_librewolf
+        install_brave
+        install_floorp
+        install_vivaldi
+        install_thorium
+        install_zen
+        echo "All browsers have been installed!"
+        exit 0
+    fi
+    
+    # Process each selection
+    for choice in $input; do
+        case $choice in
+            1) install_firefox ;;
+            2) install_librewolf ;;
+            3) install_brave ;;
+            4) install_floorp ;;
+            5) install_vivaldi ;;
+            6) install_thorium ;;
+            7) install_zen ;;
+            *) echo "Invalid choice: $choice (skipping)" ;;
+        esac
     done
+    
+    echo "Selected browsers have been installed!"
+    exit 0
 }
 
 # Function to check if a package is installed
@@ -301,46 +299,29 @@ install_thorium() {
 # Function to install Zen Browser
 install_zen() {
     # Check if Zen Browser is already installed
-    if [ -d "/opt/zen" ] && command_exists zen; then
-        echo "Zen Browser is already installed. Skipping installation."
+    if [ -f "$HOME/Applications/ZenBrowser.AppImage" ] && [ -f "$HOME/.local/share/applications/zen-browser.desktop" ]; then
+        echo "Zen Browser AppImage is already installed. Skipping installation."
         return
     fi
     
-    echo "Installing Zen Browser..."
-    
-    # Define variables
-    ZEN_DIR="/opt/zen"
-    ZEN_BIN="/usr/local/bin/zen"
-    DESKTOP_FILE="/usr/share/applications/zen-browser.desktop"
-    TAR_FILE="zen.linux-x86_64.tar.xz"
+    echo "Installing Zen Browser AppImage..."
     
     # Install dependencies
     ensure_dependencies
     
-    # Download latest Zen Browser tarball
-    echo "Downloading Zen Browser tarball..."
-    wget "https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz" -O "$TAR_FILE"
+    # Create directory for AppImages if it doesn't exist
+    mkdir -p "$HOME/Applications"
     
-    # Create installation directory
-    echo "Creating installation directory..."
-    sudo mkdir -p "$ZEN_DIR"
+    # Download latest Zen Browser AppImage
+    echo "Downloading Zen Browser AppImage..."
+    wget -O "$HOME/Applications/ZenBrowser.AppImage" "https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage"
     
-    # Extract Zen Browser
-    echo "Extracting files to $ZEN_DIR..."
-    sudo tar -xf "$TAR_FILE" -C "$ZEN_DIR" --strip-components=0
-    rm "$TAR_FILE"
+    # Make it executable
+    echo "Setting executable permissions..."
+    chmod +x "$HOME/Applications/ZenBrowser.AppImage"
     
-    # Fix permissions on the zen executable
-    echo "Setting correct permissions on Zen Browser executable..."
-    sudo chmod 755 "$ZEN_DIR/zen"
-    
-    # Create symbolic link in /usr/local/bin
-    echo "Creating symbolic link in /usr/local/bin..."
-    sudo ln -sf "$ZEN_DIR/zen" "$ZEN_BIN"
-    
-    # Set permissions for all users
-    echo "Setting directory permissions..."
-    sudo chmod -R 755 "$ZEN_DIR"
+    # Create applications directory if it doesn't exist
+    mkdir -p "$HOME/.local/share/applications"
     
     # Create desktop entry
     echo "Creating desktop entry..."
@@ -350,17 +331,16 @@ Name=Zen Browser
 Comment=Experience tranquillity while browsing the web
 GenericName=Web Browser
 Keywords=Internet;WWW;Browser;Web;Explorer
-Exec=$ZEN_BIN %u
+Exec=$HOME/Applications/ZenBrowser.AppImage %u
 Terminal=false
-X-MultipleArgs=false
 Type=Application
-Icon=$ZEN_DIR/browser/chrome/icons/default/default128.png
-Categories=GNOME;GTK;Network;WebBrowser;
-MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;video/webm;application/x-xpinstall;
-StartupNotify=true" | sudo tee "$DESKTOP_FILE"
+Icon=web-browser
+Categories=Network;WebBrowser;
+StartupNotify=true
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;video/webm;application/x-xpinstall;" > "$HOME/.local/share/applications/zen-browser.desktop"
     
-    echo "Zen Browser installation complete!"
-    echo "You can run Zen Browser by typing 'zen' in the terminal or launching it from the applications menu."
+    echo "Zen Browser AppImage installation complete!"
+    echo "You can run Zen Browser by executing $HOME/Applications/ZenBrowser.AppImage or launching it from the applications menu."
 }
 
 # Ensure we have necessary privileges
