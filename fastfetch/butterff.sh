@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-# fastfetch.sh: Install and configure Fastfetch with additional configuration files
+# fastfetch.sh: Install and configure Fastfetch from deb package
 
 command_exists() {
     command -v "$1" &>/dev/null
@@ -17,15 +17,26 @@ mkdir -p "$INSTALL_DIR"
 
 # Step 1: Install fastfetch if not already installed
 if command_exists fastfetch; then
-    echo "Fastfetch is already installed. Skipping build."
+    echo "Fastfetch is already installed. Skipping installation."
 else
-    echo "Building Fastfetch..."
-    git clone https://github.com/fastfetch-cli/fastfetch "$INSTALL_DIR/fastfetch"
-    cd "$INSTALL_DIR/fastfetch"
-    cmake -S . -B build
-    cmake --build build
-    sudo mv build/fastfetch /usr/local/bin/
-    echo "Fastfetch installed."
+    echo "Downloading and installing Fastfetch package..."
+    
+    # Install only wget for downloading the package
+    sudo apt-get install -y wget
+    
+    # Get the latest release URL
+    DEB_URL=$(wget -qO- https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest | grep -oP '"browser_download_url": "\K(.+?-linux-amd64\.deb)' | head -1)
+    
+    if [ -n "$DEB_URL" ]; then
+        # Download the latest deb package
+        wget -O "$INSTALL_DIR/fastfetch.deb" "$DEB_URL"
+        # Install it
+        sudo apt install -y "$INSTALL_DIR/fastfetch.deb"
+        echo "Fastfetch installed from deb package."
+    else
+        echo "Could not find prebuilt deb package. Installation failed."
+        exit 1
+    fi
 fi
 
 # Step 2: Create configuration directory
