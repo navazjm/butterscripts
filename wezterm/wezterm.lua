@@ -164,23 +164,13 @@ config.mouse_bindings = {
   },
 }
 
--- Uncomment for nvidia issues with wayland
--- Laggy/extra characters
--- 
--- -- function for nvidia_gpu
--- local function is_nvidia_gpu()
---   local handle = io.popen("lspci | grep -i nvidia")
---   local result = handle:read("*a")
---   handle:close()
---   return result ~= ""
--- end
--- 
--- -- NVIDIA optimization settings
--- config.enable_wayland = not is_nvidia_gpu() -- Disable Wayland if NVIDIA GPU is detected
--- config.front_end = "OpenGL"  -- More stable than WebGPU with NVIDIA
--- config.webgpu_power_preference = "HighPerformance"
--- config.prefer_egl = true
--- config.freetype_load_target = "Light"
--- config.freetype_render_target = "HorizontalLcd"
+-- Wayland disabled by default
+-- NVIDIA optimization settings
+config.enable_wayland = false -- Wayland support disabled by default
+config.front_end = "OpenGL"  -- More stable than WebGPU with NVIDIA
+config.webgpu_power_preference = "HighPerformance"
+config.prefer_egl = true
+config.freetype_load_target = "Light"
+config.freetype_render_target = "HorizontalLcd"
 
 return config
