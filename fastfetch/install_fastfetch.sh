@@ -6,11 +6,7 @@ command_exists() {
     command -v "$1" &>/dev/null
 }
 
-read -p "Install Fastfetch? (y/n): " confirm
-[[ ! "$confirm" =~ ^[Yy]$ ]] && {
-    echo "Skipping Fastfetch."
-    exit 0
-}
+# User confirmation is now handled by the calling script
 
 INSTALL_DIR="${INSTALL_DIR:-/tmp/install-fastfetch}"
 mkdir -p "$INSTALL_DIR"

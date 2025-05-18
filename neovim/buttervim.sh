@@ -16,7 +16,7 @@ echo
 if ! command -v git &> /dev/null; then
     echo "🔍 Git is not installed. Installing git..."
     sudo apt update
-    sudo apt install -y git
+    sudo apt install -y git ripgrep fd-find
 fi
 
 # Create a temporary directory
