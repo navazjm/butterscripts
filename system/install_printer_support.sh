@@ -1,15 +1,47 @@
 #!/bin/bash
 
+echo "=== Printer Support Installation ==="
+
+# Function to handle script exit
+cleanup() {
+    echo "Script execution completed."
+    exit ${1:-0}
+}
+
+# Trap Ctrl+C
+trap 'echo "Script interrupted."; cleanup 1' INT
+
 echo "Would you like to install printing services? (y/n)"
-read response
+read -r response
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
     echo "Installing printing services..."
-		sudo apt install -y cups system-config-printer simple-scan
-		sudo systemctl enable cups.service
-    echo "Printing services installed."
+    
+    # Install required packages
+    if ! sudo apt update && sudo apt install -y cups cups-client cups-filters \
+                                              system-config-printer simple-scan \
+                                              printer-driver-gutenprint hplip; then
+        echo "Error: Failed to install some packages. Please check your internet connection and try again."
+        cleanup 1
+    fi
+    
+    # Enable and start CUPS service
+    sudo systemctl enable cups.service
+    sudo systemctl start cups.service
+    
+    # Add current user to lpadmin group for printer admin rights
+    sudo usermod -aG lpadmin "$USER"
+    
+    echo -e "\n✅ Printing services installed successfully."
+    echo "- Access CUPS web interface at: http://localhost:631"
+    echo "- Use system-config-printer for GUI configuration"
+    echo "- Log out and log back in for group changes to take effect"
+    
 elif [[ "$response" =~ ^[Nn]$ ]]; then
     echo "Printing services will not be installed."
 else
     echo "Invalid input. Please enter 'y' or 'n'."
+    cleanup 1
 fi
+
+cleanup
