@@ -16,15 +16,16 @@ sudo apt-get install -y \
     libxcb-render-util0-dev libxcb-shape0-dev libxcb-util-dev \
     libxcb-xfixes0-dev libxext-dev meson ninja-build uthash-dev
 
-INSTALL_DIR="${INSTALL_DIR:-/tmp/install-picom}"
-mkdir -p "$INSTALL_DIR"
+# Create a subdirectory specifically for picom to avoid conflicts
+PICOM_DIR="${INSTALL_DIR:-/tmp/install-picom}/picom-build"
+mkdir -p "$PICOM_DIR"
 
-git clone https://github.com/FT-Labs/picom "$INSTALL_DIR/picom" || {
+git clone https://github.com/FT-Labs/picom "$PICOM_DIR" || {
     echo "Failed to clone FT-Labs Picom."
     exit 1
 }
 
-cd "$INSTALL_DIR/picom"
+cd "$PICOM_DIR"
 meson setup --buildtype=release build
 ninja -C build
 sudo ninja -C build install
