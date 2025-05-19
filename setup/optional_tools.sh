@@ -220,6 +220,7 @@ install_printer_support() {
     echo -e "${GREEN}Printer support installation completed.${NC}"
     echo -e "${YELLOW}You can access the CUPS web interface at http://localhost:631${NC}"
     echo -e "${YELLOW}or use system-config-printer to configure your printers.${NC}"
+    echo -e "${YELLOW}NOTE: A system reboot is recommended to ensure all services start properly.${NC}"
     read -p "Press Enter to continue..."
 }
 
@@ -267,6 +268,7 @@ install_bluetooth_support() {
     
     echo -e "${GREEN}Bluetooth support installation completed.${NC}"
     echo -e "${YELLOW}You can use the Bluetooth Manager (blueman) to connect devices.${NC}"
+    echo -e "${YELLOW}NOTE: A system reboot is recommended to ensure all services start properly.${NC}"
     read -p "Press Enter to continue..."
 }
 
@@ -346,7 +348,129 @@ install_apt_packages() {
     
     read -p "Additional packages: " custom_input
     if [[ -n "$custom_input" ]]; then
-        readarray -t custom_packages < <(echo "$custom_input" | tr ' ' '\n' | grep -v '^$')
+        readarray -t custom_packages < <(echo "$custom_input" | tr ' ' '\n' | grep -v '^
+
+# ButterScripts menu function
+show_butterscripts_menu() {
+    local choice
+    
+    while true; do
+        show_header
+        echo -e "${YELLOW}Select a ButterScript to install:${NC}"
+        echo -e "${CYAN}1. ${NC}Geany - Text Editor with plugins"
+        echo -e "${CYAN}2. ${NC}Browsers - Firefox, LibreWolf, Brave, Floorp, Vivaldi, Thorium, Zen"
+        echo -e "${CYAN}3. ${NC}Discord - Chat and Voice Application"
+        echo -e "${CYAN}4. ${NC}Fastfetch - System Information Display Tool"
+        echo -e "${CYAN}5. ${NC}Neovim using ButterVim Script - Text Editor"
+        echo -e "${CYAN}6. ${NC}Build Neovim from Source - Advanced"
+        echo -e "${CYAN}7. ${NC}Return to Main Menu"
+        echo
+        echo -e "${YELLOW}NOTE: Each installer has its own interactive options.${NC}"
+        echo -e "${YELLOW}      It's recommended to install one at a time.${NC}"
+        echo
+        read -p "Enter your choice [1-7]: " choice
+        
+        case $choice in
+            1) install_geany ;;
+            2) install_browsers ;;
+            3) install_discord ;;
+            4) install_fastfetch ;;
+            5) install_butter_neovim ;;
+            6) build_neovim ;;
+            7) return ;;
+            *)
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                read -p "Press Enter to continue..."
+                ;;
+        esac
+    done
+}
+
+# System Support menu function
+show_system_support_menu() {
+    local choice
+    
+    while true; do
+        show_header
+        echo -e "${YELLOW}System Support Installations:${NC}"
+        echo -e "${CYAN}1. ${NC}Printer Support - CUPS and related drivers"
+        echo -e "${CYAN}2. ${NC}Bluetooth Support - BluezZ and related utilities"
+        echo -e "${CYAN}3. ${NC}Return to Main Menu"
+        echo
+        read -p "Enter your choice [1-3]: " choice
+        
+        case $choice in
+            1) install_printer_support ;;
+            2) install_bluetooth_support ;;
+            3) return ;;
+            *)
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                read -p "Press Enter to continue..."
+                ;;
+        esac
+    done
+}
+
+# Function to handle system reboot
+reboot_system() {
+    show_header
+    echo -e "${CYAN}System Reboot${NC}"
+    echo -e "${YELLOW}A reboot is recommended after installing system services${NC}"
+    echo -e "${YELLOW}or drivers to ensure all changes take effect properly.${NC}"
+    echo
+    
+    if ask_yes_no "Do you want to reboot the system now?"; then
+        echo -e "${GREEN}Initiating system reboot...${NC}"
+        sleep 2
+        sudo reboot
+    else
+        echo -e "${YELLOW}Reboot cancelled. You can reboot manually later.${NC}"
+        read -p "Press Enter to continue..."
+    fi
+}
+
+# Main menu function
+show_main_menu() {
+    local choice
+    
+    while true; do
+        show_header
+        echo -e "${YELLOW}Please select an installation option:${NC}"
+        echo -e "${CYAN}1. ${NC}Butterscripts Installers"
+        echo -e "${CYAN}2. ${NC}APT Package Installation"
+        echo -e "${CYAN}3. ${NC}System Support (Printer & Bluetooth)"
+        echo -e "${CYAN}4. ${NC}Reboot System"
+        echo -e "${CYAN}5. ${NC}Exit"
+        echo
+        read -p "Enter your choice [1-5]: " choice
+        
+        case $choice in
+            1) show_butterscripts_menu ;;
+            2) install_apt_packages ;;
+            3) show_system_support_menu ;;
+            4) reboot_system ;;
+            5) 
+                echo -e "${GREEN}Exiting installer. Thank you for using Butter Installer!${NC}"
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                read -p "Press Enter to continue..."
+                ;;
+        esac
+    done
+}
+
+# Ensure we have wget installed
+if ! command -v wget &>/dev/null; then
+    echo -e "${YELLOW}Installing wget, which is required for downloading scripts...${NC}"
+    sudo apt update
+    sudo apt install -y wget
+fi
+
+# Start the main menu
+show_main_menu
+)
     fi
     
     # Compile all selected packages
@@ -398,20 +522,32 @@ install_apt_packages() {
     echo -e "${YELLOW}Installing selected packages...${NC}"
     sudo apt install -y "${all_selections[@]}"
     
+    # Keep track if system services were installed
+    local system_services_installed=false
+    
     # Enable services if needed
     if [[ " ${all_selections[*]} " =~ " cups " ]]; then
         echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
         sudo systemctl enable cups
         sudo systemctl start cups
+        system_services_installed=true
     fi
     
     if [[ " ${all_selections[*]} " =~ " bluetooth " ]] || [[ " ${all_selections[*]} " =~ " bluez " ]]; then
         echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
         sudo systemctl enable bluetooth
         sudo systemctl start bluetooth
+        system_services_installed=true
     fi
     
     echo -e "${GREEN}APT package installation completed.${NC}"
+    
+    # Suggest reboot if system services were installed
+    if [[ "$system_services_installed" = true ]]; then
+        echo -e "${YELLOW}NOTE: System services were installed. A reboot is recommended.${NC}"
+        echo -e "${YELLOW}      You can use the 'Reboot System' option in the main menu.${NC}"
+    fi
+    
     read -p "Press Enter to continue..."
 }
 
@@ -476,6 +612,24 @@ show_system_support_menu() {
     done
 }
 
+# Function to handle system reboot
+reboot_system() {
+    show_header
+    echo -e "${CYAN}System Reboot${NC}"
+    echo -e "${YELLOW}A reboot is recommended after installing system services${NC}"
+    echo -e "${YELLOW}or drivers to ensure all changes take effect properly.${NC}"
+    echo
+    
+    if ask_yes_no "Do you want to reboot the system now?"; then
+        echo -e "${GREEN}Initiating system reboot...${NC}"
+        sleep 2
+        sudo reboot
+    else
+        echo -e "${YELLOW}Reboot cancelled. You can reboot manually later.${NC}"
+        read -p "Press Enter to continue..."
+    fi
+}
+
 # Main menu function
 show_main_menu() {
     local choice
@@ -486,15 +640,17 @@ show_main_menu() {
         echo -e "${CYAN}1. ${NC}Butterscripts Installers"
         echo -e "${CYAN}2. ${NC}APT Package Installation"
         echo -e "${CYAN}3. ${NC}System Support (Printer & Bluetooth)"
-        echo -e "${CYAN}4. ${NC}Exit"
+        echo -e "${CYAN}4. ${NC}Reboot System"
+        echo -e "${CYAN}5. ${NC}Exit"
         echo
-        read -p "Enter your choice [1-4]: " choice
+        read -p "Enter your choice [1-5]: " choice
         
         case $choice in
             1) show_butterscripts_menu ;;
             2) install_apt_packages ;;
             3) show_system_support_menu ;;
-            4) 
+            4) reboot_system ;;
+            5) 
                 echo -e "${GREEN}Exiting installer. Thank you for using Butter Installer!${NC}"
                 exit 0
                 ;;
