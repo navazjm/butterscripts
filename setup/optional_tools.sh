@@ -170,6 +170,106 @@ build_neovim() {
     read -p "Press Enter to continue..."
 }
 
+# Function to install Printer Support
+install_printer_support() {
+    show_header
+    echo -e "${CYAN}Installing Printer Support...${NC}"
+    
+    # Define printer-related packages
+    local printer_packages=(
+        "cups" 
+        "cups-client" 
+        "cups-filters" 
+        "cups-pdf" 
+        "printer-driver-all" 
+        "printer-driver-cups-pdf" 
+        "system-config-printer" 
+        "hplip" 
+        "sane-utils" 
+        "xsane" 
+        "simple-scan"
+    )
+    
+    # Display the packages to be installed
+    echo -e "${YELLOW}The following printer-related packages will be installed:${NC}"
+    echo
+    
+    for pkg in "${printer_packages[@]}"; do
+        echo -e "- $pkg"
+    done
+    
+    echo
+    if ! ask_yes_no "Do you want to install these printer support packages?"; then
+        echo -e "${YELLOW}Installation cancelled.${NC}"
+        read -p "Press Enter to continue..."
+        return
+    fi
+    
+    # Install packages
+    echo -e "${YELLOW}Updating package lists...${NC}"
+    sudo apt update
+    
+    echo -e "${YELLOW}Installing printer support packages...${NC}"
+    sudo apt install -y "${printer_packages[@]}"
+    
+    # Enable and start the CUPS service
+    echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
+    sudo systemctl enable cups
+    sudo systemctl start cups
+    
+    echo -e "${GREEN}Printer support installation completed.${NC}"
+    echo -e "${YELLOW}You can access the CUPS web interface at http://localhost:631${NC}"
+    echo -e "${YELLOW}or use system-config-printer to configure your printers.${NC}"
+    read -p "Press Enter to continue..."
+}
+
+# Function to install Bluetooth Support
+install_bluetooth_support() {
+    show_header
+    echo -e "${CYAN}Installing Bluetooth Support...${NC}"
+    
+    # Define bluetooth-related packages
+    local bluetooth_packages=(
+        "bluetooth" 
+        "bluez" 
+        "bluez-tools" 
+        "bluez-cups" 
+        "blueman" 
+        "pulseaudio-module-bluetooth"
+    )
+    
+    # Display the packages to be installed
+    echo -e "${YELLOW}The following bluetooth-related packages will be installed:${NC}"
+    echo
+    
+    for pkg in "${bluetooth_packages[@]}"; do
+        echo -e "- $pkg"
+    done
+    
+    echo
+    if ! ask_yes_no "Do you want to install these bluetooth support packages?"; then
+        echo -e "${YELLOW}Installation cancelled.${NC}"
+        read -p "Press Enter to continue..."
+        return
+    fi
+    
+    # Install packages
+    echo -e "${YELLOW}Updating package lists...${NC}"
+    sudo apt update
+    
+    echo -e "${YELLOW}Installing bluetooth support packages...${NC}"
+    sudo apt install -y "${bluetooth_packages[@]}"
+    
+    # Enable and start the Bluetooth service
+    echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
+    sudo systemctl enable bluetooth
+    sudo systemctl start bluetooth
+    
+    echo -e "${GREEN}Bluetooth support installation completed.${NC}"
+    echo -e "${YELLOW}You can use the Bluetooth Manager (blueman) to connect devices.${NC}"
+    read -p "Press Enter to continue..."
+}
+
 # Function to prompt for package selection from a category
 prompt_category() {
     local -n category_array=$1
@@ -212,6 +312,8 @@ install_apt_packages() {
     local text_editors=("kate" "gedit" "l3afpad" "mousepad" "pluma")
     local multimedia=("mpv" "vlc" "audacity" "kdenlive" "obs-studio" "rhythmbox" "ncmpcpp" "mkvtoolnix-gui")
     local utilities=("gparted" "gnome-disk-utility" "nitrogen" "numlockx" "galculator" "cpu-x" "dnsutils" "whois" "curl" "tree" "btop" "htop" "bat" "brightnessctl")
+    local printer=("cups" "cups-client" "cups-filters" "printer-driver-all" "system-config-printer" "hplip" "simple-scan")
+    local bluetooth=("bluetooth" "bluez" "bluez-tools" "blueman" "pulseaudio-module-bluetooth")
     
     # Arrays to store selected packages
     declare -a selected_file_managers=()
@@ -220,6 +322,8 @@ install_apt_packages() {
     declare -a selected_text_editors=()
     declare -a selected_multimedia=()
     declare -a selected_utilities=()
+    declare -a selected_printer=()
+    declare -a selected_bluetooth=()
     declare -a all_selections=()
     declare -a custom_packages=()
     
@@ -230,6 +334,8 @@ install_apt_packages() {
     prompt_category text_editors "Text Editors" selected_text_editors
     prompt_category multimedia "Multimedia Applications" selected_multimedia
     prompt_category utilities "Utilities" selected_utilities
+    prompt_category printer "Printer Support" selected_printer
+    prompt_category bluetooth "Bluetooth Support" selected_bluetooth
     
     # Add custom packages
     show_header
@@ -246,7 +352,8 @@ install_apt_packages() {
     # Compile all selected packages
     all_selections=("${selected_file_managers[@]}" "${selected_graphics[@]}" 
                    "${selected_terminals[@]}" "${selected_text_editors[@]}" 
-                   "${selected_multimedia[@]}" "${selected_utilities[@]}" 
+                   "${selected_multimedia[@]}" "${selected_utilities[@]}"
+                   "${selected_printer[@]}" "${selected_bluetooth[@]}"
                    "${custom_packages[@]}")
     
     # Remove any duplicates
@@ -291,6 +398,19 @@ install_apt_packages() {
     echo -e "${YELLOW}Installing selected packages...${NC}"
     sudo apt install -y "${all_selections[@]}"
     
+    # Enable services if needed
+    if [[ " ${all_selections[*]} " =~ " cups " ]]; then
+        echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
+        sudo systemctl enable cups
+        sudo systemctl start cups
+    fi
+    
+    if [[ " ${all_selections[*]} " =~ " bluetooth " ]] || [[ " ${all_selections[*]} " =~ " bluez " ]]; then
+        echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
+        sudo systemctl enable bluetooth
+        sudo systemctl start bluetooth
+    fi
+    
     echo -e "${GREEN}APT package installation completed.${NC}"
     read -p "Press Enter to continue..."
 }
@@ -331,6 +451,31 @@ show_butterscripts_menu() {
     done
 }
 
+# System Support menu function
+show_system_support_menu() {
+    local choice
+    
+    while true; do
+        show_header
+        echo -e "${YELLOW}System Support Installations:${NC}"
+        echo -e "${CYAN}1. ${NC}Printer Support - CUPS and related drivers"
+        echo -e "${CYAN}2. ${NC}Bluetooth Support - BluezZ and related utilities"
+        echo -e "${CYAN}3. ${NC}Return to Main Menu"
+        echo
+        read -p "Enter your choice [1-3]: " choice
+        
+        case $choice in
+            1) install_printer_support ;;
+            2) install_bluetooth_support ;;
+            3) return ;;
+            *)
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                read -p "Press Enter to continue..."
+                ;;
+        esac
+    done
+}
+
 # Main menu function
 show_main_menu() {
     local choice
@@ -340,14 +485,16 @@ show_main_menu() {
         echo -e "${YELLOW}Please select an installation option:${NC}"
         echo -e "${CYAN}1. ${NC}Butterscripts Installers"
         echo -e "${CYAN}2. ${NC}APT Package Installation"
-        echo -e "${CYAN}3. ${NC}Exit"
+        echo -e "${CYAN}3. ${NC}System Support (Printer & Bluetooth)"
+        echo -e "${CYAN}4. ${NC}Exit"
         echo
-        read -p "Enter your choice [1-3]: " choice
+        read -p "Enter your choice [1-4]: " choice
         
         case $choice in
             1) show_butterscripts_menu ;;
             2) install_apt_packages ;;
-            3) 
+            3) show_system_support_menu ;;
+            4) 
                 echo -e "${GREEN}Exiting installer. Thank you for using Butter Installer!${NC}"
                 exit 0
                 ;;
