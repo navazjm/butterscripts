@@ -440,8 +440,8 @@ show_butterscripts_menu() {
         echo -e "${CYAN}2. ${NC}Browsers - Firefox, LibreWolf, Brave, Floorp, Vivaldi, Chromium, Zen"
         echo -e "${CYAN}3. ${NC}Discord - Chat and Voice Application"
         echo -e "${CYAN}4. ${NC}Fastfetch - System Information Display Tool"
-        echo -e "${CYAN}5. ${NC}Neovim using ButterVim Script - Text Editor"
-        echo -e "${CYAN}6. ${NC}Build Neovim from Source - Advanced"
+        echo -e "${CYAN}5. ${NC}Neovim with JustAGuy Linux Pre-configured Editor"
+        echo -e "${CYAN}6. ${NC}Vanilla Neovim (Latest Build) - Compiled from Source"
         echo -e "${CYAN}7. ${NC}Return to Main Menu"
         echo
         echo -e "${YELLOW}NOTE: Each installer has its own interactive options.${NC}"
