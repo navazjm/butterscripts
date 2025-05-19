@@ -32,10 +32,11 @@ show_menu() {
     echo "3. Brave"
     echo "4. Floorp"
     echo "5. Vivaldi"
-    echo "6. Thorium"
-    echo "7. Zen Browser"
-    echo "8. All Browsers"
-    echo "9. Exit"
+    echo "6. Zen Browser"
+    echo "7. Chromium"
+    echo "8. Ungoogled Chromium"
+    echo "9. All Browsers"
+    echo "10. Exit"
     echo "-------------------------------------------"
     
     # Simple read command with normal terminal behavior
@@ -47,20 +48,19 @@ show_menu() {
         exit 0
     fi
     
-    # Check if user wants to exit with option 9
-    if [[ "$input" == "9" ]]; then
+    # Check if user wants to exit with option 8
+    if [[ "$input" == "8" ]]; then
         echo "Exiting..."
         exit 0
     fi
     
-    # Install all browsers if option 8 is selected
-    if [[ "$input" == "8" ]]; then
+    # Install all browsers if option 7 is selected
+    if [[ "$input" == "7" ]]; then
         install_firefox
         install_librewolf
         install_brave
         install_floorp
         install_vivaldi
-        install_thorium
         install_zen
         echo "All browsers have been installed!"
         exit 0
@@ -74,8 +74,9 @@ show_menu() {
             3) install_brave ;;
             4) install_floorp ;;
             5) install_vivaldi ;;
-            6) install_thorium ;;
-            7) install_zen ;;
+            6) install_zen ;;
+            7) install_chromium ;;
+            8) install_ungoogled_chromium ;;
             *) echo "Invalid choice: $choice (skipping)" ;;
         esac
     done
@@ -268,34 +269,6 @@ install_vivaldi() {
     echo "You can run Vivaldi by typing 'vivaldi' or 'vivaldi-stable' in the terminal or launching it from the applications menu."
 }
 
-# Function to install Thorium
-install_thorium() {
-    # Check if Thorium is already installed
-    if is_installed thorium-browser; then
-        echo "Thorium Browser is already installed. Skipping installation."
-        return
-    fi
-    
-    echo "Installing Thorium Browser..."
-    
-    # Install dependencies
-    ensure_dependencies
-    
-    # Clear existing repository if it exists
-    sudo rm -fv /etc/apt/sources.list.d/thorium.list
-    
-    # Add Thorium repository
-    sudo wget --no-hsts -P /etc/apt/sources.list.d/ \
-    http://dl.thorium.rocks/debian/dists/stable/thorium.list
-    
-    # Update and install
-    sudo apt update
-    sudo apt install -y thorium-browser
-    
-    echo "Thorium Browser installation complete!"
-    echo "You can run Thorium by typing 'thorium-browser' in the terminal or launching it from the applications menu."
-}
-
 # Function to install Zen Browser
 install_zen() {
     # Check if Zen Browser is already installed
@@ -341,6 +314,60 @@ MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rs
     
     echo "Zen Browser AppImage installation complete!"
     echo "You can run Zen Browser by executing $HOME/Applications/ZenBrowser.AppImage or launching it from the applications menu."
+}
+
+# Function to install Chromium
+install_chromium() {
+    # Check if Chromium is already installed
+    if is_installed chromium || is_installed chromium-browser; then
+        echo "Chromium Browser is already installed. Skipping installation."
+        return
+    fi
+    
+    echo "Installing Chromium Browser..."
+    
+    # Install dependencies
+    ensure_dependencies
+    
+    # Install Chromium from Debian repositories
+    sudo apt update
+    sudo apt install -y chromium
+    
+    echo "Chromium Browser installation complete!"
+    echo "You can run Chromium by typing 'chromium' in the terminal or launching it from the applications menu."
+}
+
+# Function to install Ungoogled Chromium
+install_ungoogled_chromium() {
+    # Check if Ungoogled Chromium is already installed
+    if is_installed ungoogled-chromium; then
+        echo "Ungoogled Chromium is already installed. Skipping installation."
+        return
+    fi
+    
+    echo "Installing Ungoogled Chromium..."
+    
+    # Install dependencies
+    ensure_dependencies
+    
+    # Install required tools
+    sudo apt install -y debian-keyring apt-transport-https
+    
+    # Check for architecture and set the appropriate variable
+    arch=$(dpkg --print-architecture)
+    
+    # Add the repository and key
+    echo "deb [arch=$arch] https://download.opensuse.org/repositories/home:/ungoogled_chromium/Debian_12/ /" | sudo tee /etc/apt/sources.list.d/ungoogled-chromium.list > /dev/null
+    
+    # Download and add the repository signing key
+    curl -fsSL https://download.opensuse.org/repositories/home:/ungoogled_chromium/Debian_12/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/ungoogled-chromium.gpg > /dev/null
+    
+    # Update and install
+    sudo apt update
+    sudo apt install -y ungoogled-chromium
+    
+    echo "Ungoogled Chromium installation complete!"
+    echo "You can run Ungoogled Chromium by typing 'ungoogled-chromium' in the terminal or launching it from the applications menu."
 }
 
 # Ensure we have necessary privileges
