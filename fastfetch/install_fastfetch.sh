@@ -39,16 +39,14 @@ fi
 echo "Setting up Fastfetch config..."
 mkdir -p "$HOME/.config/fastfetch"
 
-# Step 3: Copy the three configuration files
-echo "Copying configuration files..."
+# Step 3: Download configuration files directly from GitHub
+echo "Downloading configuration files from GitHub..."
 
-# Assuming the three jsonc files are in the same directory as this script
-script_dir="$(dirname "$(readlink -f "$0")")"
+wget -O "$HOME/.config/fastfetch/config.jsonc" "https://raw.githubusercontent.com/drewgrif/butterscripts/main/fastfetch/config.jsonc"
+wget -O "$HOME/.config/fastfetch/minimal.jsonc" "https://raw.githubusercontent.com/drewgrif/butterscripts/main/fastfetch/minimal.jsonc"
+wget -O "$HOME/.config/fastfetch/server.jsonc" "https://raw.githubusercontent.com/drewgrif/butterscripts/main/fastfetch/server.jsonc"
 
-# Copy all configuration files to the main fastfetch config directory
-cp "$script_dir/config.jsonc" "$HOME/.config/fastfetch/"
-cp "$script_dir/minimal.jsonc" "$HOME/.config/fastfetch/"
-cp "$script_dir/server.jsonc" "$HOME/.config/fastfetch/"
+echo "Configuration files downloaded successfully."
 
 # Step 4: Create an alias for fastfetch based on detected shell
 echo "Setting up shell alias..."
