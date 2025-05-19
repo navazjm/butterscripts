@@ -32,7 +32,6 @@ get_butterscript() {
     
     # Remaining error checking and output as before...
 }
-}
 
 # Function to run a butterscript
 run_butterscript() {
