@@ -440,7 +440,7 @@ show_butterscripts_menu() {
         echo -e "${CYAN}2. ${NC}Browsers - Firefox, LibreWolf, Brave, Floorp, Vivaldi, Chromium, Zen"
         echo -e "${CYAN}3. ${NC}Discord - Chat and Voice Application"
         echo -e "${CYAN}4. ${NC}Fastfetch - System Information Display Tool"
-        echo -e "${CYAN}5. ${NC}Neovim with JustAGuy Linux Pre-configured Editor"
+        echo -e "${CYAN}5. ${NC}Custom Neovim - JustAGuy Linux Pre-configured Editor"
         echo -e "${CYAN}6. ${NC}Vanilla Neovim (Latest Build) - Compiled from Source"
         echo -e "${CYAN}7. ${NC}Return to Main Menu"
         echo
