@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install Geany and plugins
-sudo apt install geany geany-plugin-addons geany-plugin-git-changebar geany-plugin-spellcheck geany-plugin-treebrowser geany-plugin-markdown geany-plugin-insertnum geany-plugin-lineoperations geany-plugin-automark 
+sudo apt install -y geany geany-plugin-addons geany-plugin-git-changebar geany-plugin-spellcheck geany-plugin-treebrowser geany-plugin-markdown geany-plugin-insertnum geany-plugin-lineoperations geany-plugin-automark 
 
 # Clone and install Geany themes from drewgrif repository
 echo "Installing Geany color schemes..."
