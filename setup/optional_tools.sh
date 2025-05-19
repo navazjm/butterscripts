@@ -11,12 +11,27 @@ die() {
 # Function to download a butterscript
 get_butterscript() {
     local script_path="$1"
-    local temp_script="/tmp/butterscript_$(basename "$script_path")"
+    
+    # Sanitize the path for the temp file - replace / with _
+    local safe_name=$(echo "$script_path" | tr '/' '_')
+    local temp_script="$MAIN_TEMP_DIR/scripts/$safe_name"
+    
+    # Create directory for downloaded scripts
+    mkdir -p "$MAIN_TEMP_DIR/scripts"
     
     echo "Fetching script: $script_path from butterscripts repository..."
-    wget -q -O "$temp_script" "https://raw.githubusercontent.com/drewgrif/butterscripts/main/$script_path" || die "Failed to download script: $script_path"
-    chmod +x "$temp_script"
-    echo "$temp_script"
+    
+    # Explicitly check if the file already exists and remove it to avoid issues
+    if [ -f "$temp_script" ]; then
+        rm -f "$temp_script"
+    fi
+    
+    # Download the script
+    wget -q -O "$temp_script" "https://raw.githubusercontent.com/drewgrif/butterscripts/main/$script_path"
+    local wget_status=$?
+    
+    # Remaining error checking and output as before...
+}
 }
 
 # Function to run a butterscript

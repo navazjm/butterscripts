@@ -11,8 +11,13 @@ cleanup() {
 # Trap Ctrl+C
 trap 'echo "Script interrupted."; cleanup 1' INT
 
-echo "Would you like to install printing services? (y/n)"
-read -r response
+# Check if we have an automatic response (for non-interactive use)
+if [ -n "$1" ]; then
+    response="$1"
+else
+    echo "Would you like to install printing services? (y/n)"
+    read -r response
+fi
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
     echo "Installing printing services..."
