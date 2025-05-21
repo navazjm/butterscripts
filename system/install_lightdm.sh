@@ -4,16 +4,29 @@
 # Display Manager Installation Script
 # ===========================================
 
+# Clear the screen at the start to ensure script runs at the top of TTY
+clear
+
 # Set colors for output
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 RED='\033[0;31m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+# Function to display script header
+show_header() {
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${CYAN}         DISPLAY MANAGER INSTALLATION SCRIPT             ${NC}"
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${YELLOW}This script will help you install a display manager${NC}"
+    echo -e "${YELLOW}for your system. LightDM is the recommended option.${NC}"
+    echo
+}
 
 # Function to handle script exit
 cleanup() {
-    echo -e "\n${BLUE}Script execution completed.${NC}"
+    echo -e "\n${CYAN}Script execution completed.${NC}"
     exit ${1:-0}
 }
 
@@ -132,9 +145,7 @@ install_slim() {
 }
 
 # Print header
-echo -e "${BLUE}=====================================${NC}"
-echo -e "${BLUE}     Display Manager Installation     ${NC}"
-echo -e "${BLUE}=====================================${NC}"
+show_header
 
 # Check which display managers are installed and enabled
 if check_lightdm; then
@@ -161,12 +172,12 @@ fi
 echo -e "${YELLOW}No supported display manager found.${NC}"
 
 # Menu for user choice
-echo -e "\n${BLUE}Choose an option (or '0' to skip):${NC}"
-echo "1. Install LightDM (recommended) - Lightweight and feature-rich"
-echo "2. Install minimal GDM3 - GNOME Display Manager"
-echo "3. Install minimal SDDM - Simple Desktop Display Manager"
-echo "4. Install LXDM - LXDE Display Manager"
-echo "5. Install SLiM - Simple Login Manager (not actively maintained)"
+echo -e "\n${CYAN}Choose an option (or '0' to skip):${NC}"
+echo -e "${CYAN}1. ${NC}Install LightDM (recommended) - Lightweight and feature-rich"
+echo -e "${CYAN}2. ${NC}Install minimal GDM3 - GNOME Display Manager"
+echo -e "${CYAN}3. ${NC}Install minimal SDDM - Simple Desktop Display Manager"
+echo -e "${CYAN}4. ${NC}Install LXDM - LXDE Display Manager"
+echo -e "${CYAN}5. ${NC}Install SLiM - Simple Login Manager (not actively maintained)"
 
 read -p "Enter your choice (0/1/2/3/4/5): " choice
 
