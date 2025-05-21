@@ -27,7 +27,7 @@ show_header() {
 # Function to handle script exit
 cleanup() {
     echo -e "\n${CYAN}Script execution completed.${NC}"
-    return ${1:-0}
+    exit ${1:-0}
 }
 
 # Trap Ctrl+C
@@ -150,22 +150,22 @@ show_header
 # Check which display managers are installed and enabled
 if check_lightdm; then
     echo -e "${GREEN}LightDM is already installed and enabled (recommended).${NC}"
-    return 0
+    exit 0
 elif check_gdm; then
     echo -e "${GREEN}GDM3 is already installed and enabled.${NC}"
-    return 0
+    exit 0
 elif check_sddm; then
     echo -e "${GREEN}SDDM is already installed and enabled.${NC}"
-    return 0
+    exit 0
 elif check_lxdm; then
     echo -e "${GREEN}LXDM is already installed and enabled.${NC}"
-    return 0
+    exit 0
 elif check_ly; then
     echo -e "${GREEN}Ly is already installed and enabled.${NC}"
-    return 0
+    exit 0
 elif check_slim; then
     echo -e "${GREEN}SLiM is already installed and enabled.${NC}"
-    return 0
+    exit 0
 fi
 
 # If none of the above are installed, offer a choice to the user
@@ -184,7 +184,7 @@ read -p "Enter your choice (0/1/2/3/4/5): " choice
 case $choice in
     0)
         echo -e "${YELLOW}Skipping installation.${NC}"
-        return 0
+        exit 0
         ;;
     1)
         install_lightdm
@@ -203,7 +203,7 @@ case $choice in
         ;;
     *)
         echo -e "${RED}Invalid choice. Exiting.${NC}"
-        return 1
+        exit 1
         ;;
 esac
 
