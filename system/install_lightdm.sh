@@ -4,17 +4,30 @@
 # Display Manager Installation Script
 # ===========================================
 
+# Clear the screen at the start to ensure script runs at the top of TTY
+clear
+
 # Set colors for output
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 RED='\033[0;31m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+# Function to display script header
+show_header() {
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${CYAN}         DISPLAY MANAGER INSTALLATION SCRIPT             ${NC}"
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${YELLOW}This script will help you install a display manager${NC}"
+    echo -e "${YELLOW}for your system. LightDM is the recommended option.${NC}"
+    echo
+}
 
 # Function to handle script exit
 cleanup() {
-    echo -e "\n${BLUE}Script execution completed.${NC}"
-    exit ${1:-0}
+    echo -e "\n${CYAN}Script execution completed.${NC}"
+    return ${1:-0}
 }
 
 # Trap Ctrl+C
@@ -132,48 +145,46 @@ install_slim() {
 }
 
 # Print header
-echo -e "${BLUE}=====================================${NC}"
-echo -e "${BLUE}     Display Manager Installation     ${NC}"
-echo -e "${BLUE}=====================================${NC}"
+show_header
 
 # Check which display managers are installed and enabled
 if check_lightdm; then
     echo -e "${GREEN}LightDM is already installed and enabled (recommended).${NC}"
-    exit 0
+    return 0
 elif check_gdm; then
     echo -e "${GREEN}GDM3 is already installed and enabled.${NC}"
-    exit 0
+    return 0
 elif check_sddm; then
     echo -e "${GREEN}SDDM is already installed and enabled.${NC}"
-    exit 0
+    return 0
 elif check_lxdm; then
     echo -e "${GREEN}LXDM is already installed and enabled.${NC}"
-    exit 0
+    return 0
 elif check_ly; then
     echo -e "${GREEN}Ly is already installed and enabled.${NC}"
-    exit 0
+    return 0
 elif check_slim; then
     echo -e "${GREEN}SLiM is already installed and enabled.${NC}"
-    exit 0
+    return 0
 fi
 
 # If none of the above are installed, offer a choice to the user
 echo -e "${YELLOW}No supported display manager found.${NC}"
 
 # Menu for user choice
-echo -e "\n${BLUE}Choose an option (or '0' to skip):${NC}"
-echo "1. Install LightDM (recommended) - Lightweight and feature-rich"
-echo "2. Install minimal GDM3 - GNOME Display Manager"
-echo "3. Install minimal SDDM - Simple Desktop Display Manager"
-echo "4. Install LXDM - LXDE Display Manager"
-echo "5. Install SLiM - Simple Login Manager (not actively maintained)"
+echo -e "\n${CYAN}Choose an option (or '0' to skip):${NC}"
+echo -e "${CYAN}1. ${NC}Install LightDM (recommended) - Lightweight and feature-rich"
+echo -e "${CYAN}2. ${NC}Install minimal GDM3 - GNOME Display Manager"
+echo -e "${CYAN}3. ${NC}Install minimal SDDM - Simple Desktop Display Manager"
+echo -e "${CYAN}4. ${NC}Install LXDM - LXDE Display Manager"
+echo -e "${CYAN}5. ${NC}Install SLiM - Simple Login Manager (not actively maintained)"
 
 read -p "Enter your choice (0/1/2/3/4/5): " choice
 
 case $choice in
     0)
         echo -e "${YELLOW}Skipping installation.${NC}"
-        exit 0
+        return 0
         ;;
     1)
         install_lightdm
@@ -192,7 +203,7 @@ case $choice in
         ;;
     *)
         echo -e "${RED}Invalid choice. Exiting.${NC}"
-        exit 1
+        return 1
         ;;
 esac
 
