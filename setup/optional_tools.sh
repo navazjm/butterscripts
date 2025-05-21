@@ -11,6 +11,30 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Define package categories globally for reuse
+declare -a PRINTER_PACKAGES=(
+    "cups" 
+    "cups-client" 
+    "cups-filters" 
+    "cups-pdf" 
+    "printer-driver-all" 
+    "printer-driver-cups-pdf" 
+    "system-config-printer" 
+    "hplip" 
+    "sane-utils" 
+    "xsane" 
+    "simple-scan"
+)
+
+declare -a BLUETOOTH_PACKAGES=(
+    "bluetooth" 
+    "bluez" 
+    "bluez-tools" 
+    "bluez-cups" 
+    "blueman" 
+    "pulseaudio-module-bluetooth"
+)
+
 # Function to display script header
 show_header() {
     clear
@@ -35,6 +59,46 @@ ask_yes_no() {
             *) echo -e "${RED}Please answer yes or no.${NC}" ;;
         esac
     done
+}
+
+# Common function to install a group of packages
+install_package_group() {
+    local packages=("$@")  # Accept all arguments as package names
+    local enable_cups=false
+    local enable_bluetooth=false
+    
+    # Check if we need to enable specific services
+    for pkg in "${packages[@]}"; do
+        if [[ "$pkg" == "cups" ]]; then
+            enable_cups=true
+        elif [[ "$pkg" == "bluetooth" ]] || [[ "$pkg" == "bluez" ]]; then
+            enable_bluetooth=true
+        fi
+    done
+    
+    # Install packages
+    echo -e "${YELLOW}Updating package lists...${NC}"
+    sudo apt update
+    
+    echo -e "${YELLOW}Installing packages...${NC}"
+    sudo apt install -y "${packages[@]}"
+    
+    # Enable and start services if needed
+    if [[ "$enable_cups" == true ]]; then
+        echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
+        sudo systemctl enable cups
+        sudo systemctl start cups
+    fi
+    
+    if [[ "$enable_bluetooth" == true ]]; then
+        echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
+        sudo systemctl enable bluetooth
+        sudo systemctl start bluetooth
+    fi
+    
+    if [[ "$enable_cups" == true ]] || [[ "$enable_bluetooth" == true ]]; then
+        echo -e "${YELLOW}NOTE: A system reboot is recommended to ensure all services start properly.${NC}"
+    fi
 }
 
 # Function to download a script from GitHub
@@ -175,26 +239,11 @@ install_printer_support() {
     show_header
     echo -e "${CYAN}Installing Printer Support...${NC}"
     
-    # Define printer-related packages
-    local printer_packages=(
-        "cups" 
-        "cups-client" 
-        "cups-filters" 
-        "cups-pdf" 
-        "printer-driver-all" 
-        "printer-driver-cups-pdf" 
-        "system-config-printer" 
-        "hplip" 
-        "sane-utils" 
-        "xsane" 
-        "simple-scan"
-    )
-    
     # Display the packages to be installed
     echo -e "${YELLOW}The following printer-related packages will be installed:${NC}"
     echo
     
-    for pkg in "${printer_packages[@]}"; do
+    for pkg in "${PRINTER_PACKAGES[@]}"; do
         echo -e "- $pkg"
     done
     
@@ -205,22 +254,12 @@ install_printer_support() {
         return
     fi
     
-    # Install packages
-    echo -e "${YELLOW}Updating package lists...${NC}"
-    sudo apt update
-    
-    echo -e "${YELLOW}Installing printer support packages...${NC}"
-    sudo apt install -y "${printer_packages[@]}"
-    
-    # Enable and start the CUPS service
-    echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
-    sudo systemctl enable cups
-    sudo systemctl start cups
+    # Use common function to install packages
+    install_package_group "${PRINTER_PACKAGES[@]}"
     
     echo -e "${GREEN}Printer support installation completed.${NC}"
     echo -e "${YELLOW}You can access the CUPS web interface at http://localhost:631${NC}"
     echo -e "${YELLOW}or use system-config-printer to configure your printers.${NC}"
-    echo -e "${YELLOW}NOTE: A system reboot is recommended to ensure all services start properly.${NC}"
     read -p "Press Enter to continue..."
 }
 
@@ -229,21 +268,11 @@ install_bluetooth_support() {
     show_header
     echo -e "${CYAN}Installing Bluetooth Support...${NC}"
     
-    # Define bluetooth-related packages
-    local bluetooth_packages=(
-        "bluetooth" 
-        "bluez" 
-        "bluez-tools" 
-        "bluez-cups" 
-        "blueman" 
-        "pulseaudio-module-bluetooth"
-    )
-    
     # Display the packages to be installed
     echo -e "${YELLOW}The following bluetooth-related packages will be installed:${NC}"
     echo
     
-    for pkg in "${bluetooth_packages[@]}"; do
+    for pkg in "${BLUETOOTH_PACKAGES[@]}"; do
         echo -e "- $pkg"
     done
     
@@ -254,21 +283,11 @@ install_bluetooth_support() {
         return
     fi
     
-    # Install packages
-    echo -e "${YELLOW}Updating package lists...${NC}"
-    sudo apt update
-    
-    echo -e "${YELLOW}Installing bluetooth support packages...${NC}"
-    sudo apt install -y "${bluetooth_packages[@]}"
-    
-    # Enable and start the Bluetooth service
-    echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
-    sudo systemctl enable bluetooth
-    sudo systemctl start bluetooth
+    # Use common function to install packages
+    install_package_group "${BLUETOOTH_PACKAGES[@]}"
     
     echo -e "${GREEN}Bluetooth support installation completed.${NC}"
     echo -e "${YELLOW}You can use the Bluetooth Manager (blueman) to connect devices.${NC}"
-    echo -e "${YELLOW}NOTE: A system reboot is recommended to ensure all services start properly.${NC}"
     read -p "Press Enter to continue..."
 }
 
@@ -314,8 +333,6 @@ install_apt_packages() {
     local text_editors=("kate" "gedit" "l3afpad" "mousepad" "pluma")
     local multimedia=("mpv" "vlc" "audacity" "kdenlive" "obs-studio" "rhythmbox" "ncmpcpp" "mkvtoolnix-gui")
     local utilities=("gparted" "gnome-disk-utility" "nitrogen" "numlockx" "galculator" "cpu-x" "dnsutils" "whois" "curl" "tree" "btop" "htop" "bat" "brightnessctl")
-    local printer=("cups" "cups-client" "cups-filters" "printer-driver-all" "system-config-printer" "hplip" "simple-scan")
-    local bluetooth=("bluetooth" "bluez" "bluez-tools" "blueman" "pulseaudio-module-bluetooth")
     
     # Arrays to store selected packages
     declare -a selected_file_managers=()
@@ -324,10 +341,17 @@ install_apt_packages() {
     declare -a selected_text_editors=()
     declare -a selected_multimedia=()
     declare -a selected_utilities=()
-    declare -a selected_printer=()
-    declare -a selected_bluetooth=()
-    declare -a all_selections=()
     declare -a custom_packages=()
+    declare -a all_selections=()
+    
+    # Note about system support
+    show_header
+    echo -e "${CYAN}Package Selection Note:${NC}"
+    echo -e "${YELLOW}For Printer and Bluetooth support, please use the dedicated${NC}"
+    echo -e "${YELLOW}options in the System Support menu instead of selecting${NC}"
+    echo -e "${YELLOW}those packages here.${NC}"
+    echo
+    read -p "Press Enter to continue to package selection..."
     
     # Prompt each category
     prompt_category file_managers "File Managers" selected_file_managers
@@ -336,8 +360,6 @@ install_apt_packages() {
     prompt_category text_editors "Text Editors" selected_text_editors
     prompt_category multimedia "Multimedia Applications" selected_multimedia
     prompt_category utilities "Utilities" selected_utilities
-    prompt_category printer "Printer Support" selected_printer
-    prompt_category bluetooth "Bluetooth Support" selected_bluetooth
     
     # Add custom packages
     show_header
@@ -355,7 +377,6 @@ install_apt_packages() {
     all_selections=("${selected_file_managers[@]}" "${selected_graphics[@]}" 
                    "${selected_terminals[@]}" "${selected_text_editors[@]}" 
                    "${selected_multimedia[@]}" "${selected_utilities[@]}"
-                   "${selected_printer[@]}" "${selected_bluetooth[@]}"
                    "${custom_packages[@]}")
     
     # Remove any duplicates
@@ -392,40 +413,10 @@ install_apt_packages() {
     echo -e "${CYAN}Installing Selected Packages...${NC}"
     echo
     
-    # Update package lists
-    echo -e "${YELLOW}Updating package lists...${NC}"
-    sudo apt update
-    
-    # Install selected packages
-    echo -e "${YELLOW}Installing selected packages...${NC}"
-    sudo apt install -y "${all_selections[@]}"
-    
-    # Keep track if system services were installed
-    local system_services_installed=false
-    
-    # Enable services if needed
-    if [[ " ${all_selections[*]} " =~ " cups " ]]; then
-        echo -e "${YELLOW}Enabling and starting CUPS service...${NC}"
-        sudo systemctl enable cups
-        sudo systemctl start cups
-        system_services_installed=true
-    fi
-    
-    if [[ " ${all_selections[*]} " =~ " bluetooth " ]] || [[ " ${all_selections[*]} " =~ " bluez " ]]; then
-        echo -e "${YELLOW}Enabling and starting Bluetooth service...${NC}"
-        sudo systemctl enable bluetooth
-        sudo systemctl start bluetooth
-        system_services_installed=true
-    fi
+    # Use common function to install packages
+    install_package_group "${all_selections[@]}"
     
     echo -e "${GREEN}APT package installation completed.${NC}"
-    
-    # Suggest reboot if system services were installed
-    if [[ "$system_services_installed" = true ]]; then
-        echo -e "${YELLOW}NOTE: System services were installed. A reboot is recommended.${NC}"
-        echo -e "${YELLOW}      You can use the 'Reboot System' option in the main menu.${NC}"
-    fi
-    
     read -p "Press Enter to continue..."
 }
 
