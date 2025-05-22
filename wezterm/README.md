@@ -3,7 +3,7 @@ A simple WezTerm terminal emulator installer for Linux systems.
 > **Note:** This script installs WezTerm terminal emulator on Debian-based systems.
 
 ## Features
-- Installs WezTerm with a single command
+- Installs WezTerm nightly build with a single command
 - Custom configuration automatically applied
 - Clean installation process
 
@@ -20,15 +20,15 @@ git clone https://github.com/drewgrif/butterscripts.git
 # Navigate to wezterm directory
 cd butterscripts/wezterm
 # Make executable
-chmod +x butterwez.sh
+chmod +x install_wezterm.sh
 # Run the installer
-./butterwez.sh
+./install_wezterm.sh
 ```
 
 ## How It Works
 The script:
-1. Downloads the latest WezTerm Linux package (version 20240203-110809-5046fc22)
-2. Installs it on your system
+1. Adds the WezTerm repository and GPG key
+2. Installs the latest WezTerm nightly build
 3. Sets up configuration in ~/.config/wezterm
 4. Uses the configuration from https://github.com/drewgrif/butterscripts/wezterm/wezterm.lua
 
