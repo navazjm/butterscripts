@@ -4,9 +4,16 @@
 # This script provides installation methods for various browsers
 # targeting the latest versions available for Debian Stable
 
+# Set colors for output (matching lightdm script)
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 # Check if running on Debian
 if [ ! -f /etc/debian_version ]; then
-    echo "This script is optimized for Debian. Your system may not be compatible."
+    echo -e "${RED}This script is optimized for Debian. Your system may not be compatible.${NC}"
     read -p "Continue anyway? (y/n): " continue_anyway
     if [[ "$continue_anyway" != "y" && "$continue_anyway" != "Y" ]]; then
         exit 1
@@ -15,7 +22,7 @@ fi
 
 # Make sure we have basic dependencies
 ensure_dependencies() {
-    echo "Installing essential dependencies..."
+    echo -e "${GREEN}Installing essential dependencies...${NC}"
     sudo apt update
     sudo apt install -y wget curl apt-transport-https gnupg ca-certificates software-properties-common
 }
@@ -23,46 +30,48 @@ ensure_dependencies() {
 # Choose browsers to install
 show_menu() {
     clear
-    echo "==========================================="
-    echo "  BROWSER INSTALLATION SCRIPTS (DEBIAN)   "
-    echo "==========================================="
-    echo "Enter numbers of browsers to install (separated by spaces):"
-    echo "1. Firefox Latest"
-    echo "2. LibreWolf"
-    echo "3. Brave"
-    echo "4. Floorp"
-    echo "5. Vivaldi"
-    echo "6. Zen Browser"
-    echo "7. Chromium"
-    echo "8. Ungoogled Chromium"
-    echo "9. All Browsers"
-    echo "10. Exit"
-    echo "-------------------------------------------"
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${CYAN}         BROWSER INSTALLATION SCRIPTS (DEBIAN)          ${NC}"
+    echo -e "${CYAN}=========================================================${NC}"
+    echo -e "${YELLOW}Enter numbers of browsers to install (separated by spaces):${NC}"
+    echo -e "${CYAN}1. ${NC}Firefox Latest"
+    echo -e "${CYAN}2. ${NC}LibreWolf"
+    echo -e "${CYAN}3. ${NC}Brave"
+    echo -e "${CYAN}4. ${NC}Floorp"
+    echo -e "${CYAN}5. ${NC}Vivaldi"
+    echo -e "${CYAN}6. ${NC}Zen Browser"
+    echo -e "${CYAN}7. ${NC}Chromium"
+    echo -e "${CYAN}8. ${NC}Ungoogled Chromium"
+    echo -e "${CYAN}9. ${NC}All Browsers"
+    echo -e "${CYAN}10. ${NC}Exit"
+    echo -e "${CYAN}=========================================================${NC}"
     
     # Simple read command with normal terminal behavior
     read -p "Enter your choice(s): " input
     
     # Check if input is empty
     if [ -z "$input" ]; then
-        echo "No selection made. Exiting."
+        echo -e "${YELLOW}No selection made. Exiting.${NC}"
         exit 0
     fi
     
-    # Check if user wants to exit with option 8
-    if [[ "$input" == "8" ]]; then
-        echo "Exiting..."
+    # Check if user wants to exit with option 10
+    if [[ "$input" == "10" ]]; then
+        echo -e "${YELLOW}Exiting...${NC}"
         exit 0
     fi
     
-    # Install all browsers if option 7 is selected
-    if [[ "$input" == "7" ]]; then
+    # Install all browsers if option 9 is selected
+    if [[ "$input" == "9" ]]; then
         install_firefox
         install_librewolf
         install_brave
         install_floorp
         install_vivaldi
         install_zen
-        echo "All browsers have been installed!"
+        install_chromium
+        install_ungoogled_chromium
+        echo -e "${GREEN}All browsers have been installed!${NC}"
         exit 0
     fi
     
@@ -77,11 +86,11 @@ show_menu() {
             6) install_zen ;;
             7) install_chromium ;;
             8) install_ungoogled_chromium ;;
-            *) echo "Invalid choice: $choice (skipping)" ;;
+            *) echo -e "${RED}Invalid choice: $choice (skipping)${NC}" ;;
         esac
     done
     
-    echo "Selected browsers have been installed!"
+    echo -e "${GREEN}Selected browsers have been installed!${NC}"
     exit 0
 }
 
@@ -103,11 +112,11 @@ command_exists() {
 install_firefox() {
     # Check if Firefox is already installed
     if command_exists firefox && [ -d "/opt/firefox" ]; then
-        echo "Firefox is already installed. Skipping installation."
+        echo -e "${GREEN}Firefox is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Firefox Latest..."
+    echo -e "${GREEN}Installing Firefox Latest...${NC}"
     
     # Define variables
     FIREFOX_DIR="/opt/firefox"
@@ -118,7 +127,7 @@ install_firefox() {
 
     # Function to clean up old Firefox installation
     cleanup() {
-        echo "Cleaning up old Firefox installation..."
+        echo -e "${YELLOW}Cleaning up old Firefox installation...${NC}"
         sudo rm -rf "$FIREFOX_DIR"
         sudo rm -f "$FIREFOX_BIN"
         sudo rm -f "$DESKTOP_FILE"
@@ -130,37 +139,37 @@ install_firefox() {
     fi
 
     # Install or update Firefox
-    echo "Retrieving the latest Firefox tar.xz file..."
+    echo -e "${CYAN}Retrieving the latest Firefox tar.xz file...${NC}"
     wget "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -O "$TAR_FILE"
 
-    echo "Extracting files to a temporary directory..."
+    echo -e "${CYAN}Extracting files to a temporary directory...${NC}"
     sudo mkdir -p "$TEMP_DIR"
     sudo tar -xvf "$TAR_FILE" -C "$TEMP_DIR" --strip-components=1
     rm "$TAR_FILE"
 
-    echo "Moving extracted files to /opt/firefox..."
+    echo -e "${CYAN}Moving extracted files to /opt/firefox...${NC}"
     sudo rm -rf "$FIREFOX_DIR"
     sudo mv "$TEMP_DIR" "$FIREFOX_DIR"
 
-    echo "Creating symbolic link in /usr/local/bin..."
+    echo -e "${CYAN}Creating symbolic link in /usr/local/bin...${NC}"
     sudo ln -sf "$FIREFOX_DIR/firefox" "$FIREFOX_BIN"
 
-    echo "Downloading official Firefox desktop entry..."
+    echo -e "${CYAN}Downloading official Firefox desktop entry...${NC}"
     sudo wget "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop" -P /usr/local/share/applications
 
-    echo "Firefox installation completed."
-    echo "You can run Firefox by typing 'firefox' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Firefox installation completed.${NC}"
+    echo -e "${YELLOW}You can run Firefox by typing 'firefox' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install LibreWolf
 install_librewolf() {
     # Check if LibreWolf is already installed
     if is_installed librewolf; then
-        echo "LibreWolf is already installed. Skipping installation."
+        echo -e "${GREEN}LibreWolf is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing LibreWolf..."
+    echo -e "${GREEN}Installing LibreWolf...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -182,21 +191,24 @@ install_librewolf() {
     
     # Update and install
     sudo apt update
-    sudo apt install -y librewolf
+    if ! sudo apt install -y librewolf; then
+        echo -e "${RED}Failed to install LibreWolf.${NC}"
+        return 1
+    fi
     
-    echo "LibreWolf installation complete!"
-    echo "You can run LibreWolf by typing 'librewolf' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}LibreWolf installation complete!${NC}"
+    echo -e "${YELLOW}You can run LibreWolf by typing 'librewolf' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install Brave
 install_brave() {
     # Check if Brave is already installed
     if is_installed brave-browser; then
-        echo "Brave Browser is already installed. Skipping installation."
+        echo -e "${GREEN}Brave Browser is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Brave Browser..."
+    echo -e "${GREEN}Installing Brave Browser...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -209,21 +221,24 @@ install_brave() {
     
     # Update and install
     sudo apt update
-    sudo apt install -y brave-browser
+    if ! sudo apt install -y brave-browser; then
+        echo -e "${RED}Failed to install Brave Browser.${NC}"
+        return 1
+    fi
     
-    echo "Brave Browser installation complete!"
-    echo "You can run Brave by typing 'brave-browser' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Brave Browser installation complete!${NC}"
+    echo -e "${YELLOW}You can run Brave by typing 'brave-browser' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install Floorp
 install_floorp() {
     # Check if Floorp is already installed
     if is_installed floorp; then
-        echo "Floorp Browser is already installed. Skipping installation."
+        echo -e "${GREEN}Floorp Browser is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Floorp Browser..."
+    echo -e "${GREEN}Installing Floorp Browser...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -236,21 +251,24 @@ install_floorp() {
     
     # Update and install
     sudo apt update
-    sudo apt install -y floorp
+    if ! sudo apt install -y floorp; then
+        echo -e "${RED}Failed to install Floorp Browser.${NC}"
+        return 1
+    fi
     
-    echo "Floorp Browser installation complete!"
-    echo "You can run Floorp by typing 'floorp' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Floorp Browser installation complete!${NC}"
+    echo -e "${YELLOW}You can run Floorp by typing 'floorp' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install Vivaldi
 install_vivaldi() {
     # Check if Vivaldi is already installed
     if is_installed vivaldi-stable; then
-        echo "Vivaldi Browser is already installed. Skipping installation."
+        echo -e "${GREEN}Vivaldi Browser is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Vivaldi Browser..."
+    echo -e "${GREEN}Installing Vivaldi Browser...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -263,21 +281,24 @@ install_vivaldi() {
     
     # Update and install
     sudo apt update
-    sudo apt install -y vivaldi-stable
+    if ! sudo apt install -y vivaldi-stable; then
+        echo -e "${RED}Failed to install Vivaldi Browser.${NC}"
+        return 1
+    fi
     
-    echo "Vivaldi Browser installation complete!"
-    echo "You can run Vivaldi by typing 'vivaldi' or 'vivaldi-stable' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Vivaldi Browser installation complete!${NC}"
+    echo -e "${YELLOW}You can run Vivaldi by typing 'vivaldi' or 'vivaldi-stable' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install Zen Browser
 install_zen() {
     # Check if Zen Browser is already installed
     if [ -f "$HOME/Applications/ZenBrowser.AppImage" ] && [ -f "$HOME/.local/share/applications/zen-browser.desktop" ]; then
-        echo "Zen Browser AppImage is already installed. Skipping installation."
+        echo -e "${GREEN}Zen Browser AppImage is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Zen Browser AppImage..."
+    echo -e "${GREEN}Installing Zen Browser AppImage...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -286,18 +307,21 @@ install_zen() {
     mkdir -p "$HOME/Applications"
     
     # Download latest Zen Browser AppImage
-    echo "Downloading Zen Browser AppImage..."
-    wget -O "$HOME/Applications/ZenBrowser.AppImage" "https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage"
+    echo -e "${CYAN}Downloading Zen Browser AppImage...${NC}"
+    if ! wget -O "$HOME/Applications/ZenBrowser.AppImage" "https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage"; then
+        echo -e "${RED}Failed to download Zen Browser AppImage.${NC}"
+        return 1
+    fi
     
     # Make it executable
-    echo "Setting executable permissions..."
+    echo -e "${CYAN}Setting executable permissions...${NC}"
     chmod +x "$HOME/Applications/ZenBrowser.AppImage"
     
     # Create applications directory if it doesn't exist
     mkdir -p "$HOME/.local/share/applications"
     
     # Create desktop entry
-    echo "Creating desktop entry..."
+    echo -e "${CYAN}Creating desktop entry...${NC}"
     echo "[Desktop Entry]
 Version=1.0
 Name=Zen Browser
@@ -312,40 +336,43 @@ Categories=Network;WebBrowser;
 StartupNotify=true
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;video/webm;application/x-xpinstall;" > "$HOME/.local/share/applications/zen-browser.desktop"
     
-    echo "Zen Browser AppImage installation complete!"
-    echo "You can run Zen Browser by executing $HOME/Applications/ZenBrowser.AppImage or launching it from the applications menu."
+    echo -e "${GREEN}Zen Browser AppImage installation complete!${NC}"
+    echo -e "${YELLOW}You can run Zen Browser by executing $HOME/Applications/ZenBrowser.AppImage or launching it from the applications menu.${NC}"
 }
 
 # Function to install Chromium
 install_chromium() {
     # Check if Chromium is already installed
     if is_installed chromium || is_installed chromium-browser; then
-        echo "Chromium Browser is already installed. Skipping installation."
+        echo -e "${GREEN}Chromium Browser is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Chromium Browser..."
+    echo -e "${GREEN}Installing Chromium Browser...${NC}"
     
     # Install dependencies
     ensure_dependencies
     
     # Install Chromium from Debian repositories
     sudo apt update
-    sudo apt install -y chromium
+    if ! sudo apt install -y chromium; then
+        echo -e "${RED}Failed to install Chromium Browser.${NC}"
+        return 1
+    fi
     
-    echo "Chromium Browser installation complete!"
-    echo "You can run Chromium by typing 'chromium' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Chromium Browser installation complete!${NC}"
+    echo -e "${YELLOW}You can run Chromium by typing 'chromium' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install Ungoogled Chromium
 install_ungoogled_chromium() {
     # Check if Ungoogled Chromium is already installed
     if is_installed ungoogled-chromium; then
-        echo "Ungoogled Chromium is already installed. Skipping installation."
+        echo -e "${GREEN}Ungoogled Chromium is already installed. Skipping installation.${NC}"
         return
     fi
     
-    echo "Installing Ungoogled Chromium..."
+    echo -e "${GREEN}Installing Ungoogled Chromium...${NC}"
     
     # Install dependencies
     ensure_dependencies
@@ -364,16 +391,19 @@ install_ungoogled_chromium() {
     
     # Update and install
     sudo apt update
-    sudo apt install -y ungoogled-chromium
+    if ! sudo apt install -y ungoogled-chromium; then
+        echo -e "${RED}Failed to install Ungoogled Chromium.${NC}"
+        return 1
+    fi
     
-    echo "Ungoogled Chromium installation complete!"
-    echo "You can run Ungoogled Chromium by typing 'ungoogled-chromium' in the terminal or launching it from the applications menu."
+    echo -e "${GREEN}Ungoogled Chromium installation complete!${NC}"
+    echo -e "${YELLOW}You can run Ungoogled Chromium by typing 'ungoogled-chromium' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Ensure we have necessary privileges
 if [[ $EUID -ne 0 ]]; then
-    echo "This script requires sudo privileges for installation."
-    echo "You'll be prompted for your password when necessary."
+    echo -e "${YELLOW}This script requires sudo privileges for installation.${NC}"
+    echo -e "${YELLOW}You'll be prompted for your password when necessary.${NC}"
 fi
 
 # Start installation process
