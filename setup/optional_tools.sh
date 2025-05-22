@@ -355,7 +355,59 @@ install_apt_packages() {
     prompt_category multimedia "Multimedia Applications" selected_multimedia
     prompt_category utilities "Utilities" selected_utilities
     
-    # Rest of the function remains unchanged...
+    # Combine all selections
+    all_selections=("${selected_file_managers[@]}" "${selected_graphics[@]}" "${selected_terminals[@]}" "${selected_text_editors[@]}" "${selected_multimedia[@]}" "${selected_utilities[@]}")
+    
+    # Ask about LibreOffice
+    show_header
+    echo -e "${CYAN}LibreOffice Installation:${NC}"
+    echo -e "${YELLOW}LibreOffice is a complete office suite (Writer, Calc, Impress, Draw, Math, Base)${NC}"
+    echo
+    if ask_yes_no "Do you want to install LibreOffice?"; then
+        all_selections+=("libreoffice")
+    fi
+    
+    # Prompt for custom packages
+    show_header
+    echo -e "${CYAN}Custom Package Installation:${NC}"
+    echo -e "${YELLOW}Enter any additional package names (space-separated) or press Enter to skip:${NC}"
+    echo -e "${YELLOW}Example: neofetch tmux zsh${NC}"
+    echo
+    read -p "> " custom_input
+    
+    if [[ -n "$custom_input" ]]; then
+        read -ra custom_packages <<< "$custom_input"
+        all_selections+=("${custom_packages[@]}")
+    fi
+    
+    # Display summary and confirm
+    if [ ${#all_selections[@]} -eq 0 ]; then
+        echo -e "${YELLOW}No packages selected for installation.${NC}"
+        read -p "Press Enter to continue..."
+        return
+    fi
+    
+    show_header
+    echo -e "${CYAN}Selected packages for installation:${NC}"
+    echo
+    for pkg in "${all_selections[@]}"; do
+        echo -e "- $pkg"
+    done
+    echo
+    echo -e "${YELLOW}Total packages: ${#all_selections[@]}${NC}"
+    echo
+    
+    if ! ask_yes_no "Do you want to install these packages?"; then
+        echo -e "${YELLOW}Installation cancelled.${NC}"
+        read -p "Press Enter to continue..."
+        return
+    fi
+    
+    # Install all selected packages
+    install_package_group "${all_selections[@]}"
+    
+    echo -e "${GREEN}APT package installation completed.${NC}"
+    read -p "Press Enter to continue..."
 }
 
 # ButterScripts menu function
