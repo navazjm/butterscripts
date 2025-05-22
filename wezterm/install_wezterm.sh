@@ -21,18 +21,16 @@ install_wezterm() {
         return
     fi
     
-    echo "Installing WezTerm..."
+    echo "Installing WezTerm nightly..."
     
-    # More descriptive variables
-    WEZTERM_VERSION="20240203-110809-5046fc22"
-    WEZTERM_FILENAME="wezterm-${WEZTERM_VERSION}.Debian12.deb"
-    WEZTERM_URL="https://github.com/wezterm/wezterm/releases/download/${WEZTERM_VERSION}/${WEZTERM_FILENAME}"
-    TMP_DEB="/tmp/${WEZTERM_FILENAME}"
+    # Add WezTerm repository
+    curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg || die "Failed to add WezTerm GPG key."
+    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list || die "Failed to add WezTerm repository."
+    sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
     
-    # Download and install
-    wget -O "$TMP_DEB" "$WEZTERM_URL" || die "Failed to download WezTerm."
-    sudo apt install -y "$TMP_DEB" || die "Failed to install WezTerm."
-    rm -f "$TMP_DEB"
+    # Update package list and install
+    sudo apt update || die "Failed to update package list."
+    sudo apt install -y wezterm-nightly || die "Failed to install WezTerm nightly."
     
     # Setup configuration
     echo "Setting up WezTerm configuration..."
