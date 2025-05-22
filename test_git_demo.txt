@@ -1,2 +1,0 @@
-This is a test file to demonstrate git commands in Claude Code.
-Created on 5/22/2025 to show that git operations work properly.
