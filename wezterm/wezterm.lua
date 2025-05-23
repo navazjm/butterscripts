@@ -48,7 +48,7 @@ config.font = wezterm.font_with_fallback({
   {family='FiraCode Nerd Font Mono', weight='Regular'},
   {family='Symbols Nerd Font Mono', weight='Regular'}
 })
-config.font_size = 11
+config.font_size = 16
 config.line_height = 1.1
 config.window_frame = {
   font = wezterm.font{family='FiraCode Nerd Font Mono', weight='Regular'},
