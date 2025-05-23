@@ -14,8 +14,8 @@ local colors = {
 config.keys = {}
 -- Pane management
 for _, v in ipairs({
-  {"`", act.SplitPane{direction="Right", size={Percent=30}}},
-  {"Tab", act.SplitPane{direction="Down", size={Percent=30}}},
+  {"-", act.SplitPane{direction="Right", size={Percent=30}}},
+  {"=", act.SplitPane{direction="Down", size={Percent=30}}},
   {"Enter", act.SplitHorizontal{domain='CurrentPaneDomain'}},
   {"\\", act.SplitVertical{domain='CurrentPaneDomain'}},
   {"w", act.CloseCurrentPane{confirm=true}},
@@ -48,7 +48,7 @@ config.font = wezterm.font_with_fallback({
   {family='FiraCode Nerd Font Mono', weight='Regular'},
   {family='Symbols Nerd Font Mono', weight='Regular'}
 })
-config.font_size = 16
+config.font_size = 11
 config.line_height = 1.1
 config.window_frame = {
   font = wezterm.font{family='FiraCode Nerd Font Mono', weight='Regular'},
