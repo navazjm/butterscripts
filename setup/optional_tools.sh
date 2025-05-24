@@ -117,11 +117,16 @@ install_geany() {
     show_header
     echo -e "${CYAN}Installing Geany and plugins...${NC}"
     
-    # Download the script
-    download_script "https://raw.githubusercontent.com/drewgrif/butterscripts/refs/heads/main/config/install_geany.sh" "install_geany.sh"
-    
-    # Execute the script
-    bash "/tmp/install_geany.sh"
+    # Check if local install_geany.sh exists
+    if [ -f "./install_geany.sh" ]; then
+        echo -e "${YELLOW}Using local install_geany.sh script...${NC}"
+        bash "./install_geany.sh"
+    else
+        # Fallback to downloading from GitHub
+        echo -e "${YELLOW}Local script not found, downloading from GitHub...${NC}"
+        download_script "https://raw.githubusercontent.com/drewgrif/butterscripts/refs/heads/main/setup/install_geany.sh" "install_geany.sh"
+        bash "/tmp/install_geany.sh"
+    fi
     
     echo -e "${GREEN}Geany installation completed.${NC}"
     read -p "Press Enter to continue..."
