@@ -26,7 +26,7 @@ if command -v apt &> /dev/null; then
     if apt list geany-plugin-addons 2>/dev/null | grep -q geany-plugin-addons; then
         sudo apt install -y geany-plugin-addons geany-plugin-automark geany-plugin-git-changebar \
                            geany-plugin-insertnum geany-plugin-markdown geany-plugin-spellcheck \
-                           geany-plugin-splitwindow geany-plugin-treebrowser
+                           geany-plugin-treebrowser
     else
         # Fallback to full plugin package if individual packages don't exist
         sudo apt install -y geany-plugins
