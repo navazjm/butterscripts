@@ -29,7 +29,7 @@ The repository is organized into the following directories:
 
 ---
 
-### `/fastetch`
+### `/fastfetch`
 
 - [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/fastfetch)
 - **fastfetch**: fastfetch latest
@@ -38,11 +38,40 @@ The repository is organized into the following directories:
 
 ---
 
+### `/mkvmerge`
+
+- **mergemkvs**: Script for merging MKV files
+
+---
+
 ### `/neovim`
 
 - [Installation and Documentation](https://github.com/drewgrif/butterscripts/tree/main/neovim)
-- **butter-nvim.sh**: Installs Neovim and sets up JustAGuyLinux's configuration
+- **buttervim.sh**: Installs Neovim and sets up JustAGuyLinux's configuration
 - **build-neovim.sh**: Builds and installs Neovim from source code
+
+---
+
+### `/setup`
+
+- **install_geany.sh**: Installs and configures Geany text editor
+- **install_picom.sh**: Installs Picom compositor
+- **optional_tools.sh**: Installs various optional development tools
+
+---
+
+### `/st`
+
+- **install_st.sh**: Installs st (simple terminal)
+
+---
+
+### `/system`
+
+- **add_bashrc.sh**: Adds custom bash configuration
+- **install_bluetooth.sh**: Installs and configures Bluetooth support
+- **install_lightdm.sh**: Installs LightDM display manager
+- **install_printer_support.sh**: Sets up printer support
 
 ---
 

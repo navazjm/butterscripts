@@ -1,201 +1,248 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
+# Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+# Colors
+declare -A COLORS=(
+    [RED]='\033[0;31m'
+    [GREEN]='\033[0;32m'
+    [YELLOW]='\033[1;33m'
+    [BLUE]='\033[0;34m'
+    [PURPLE]='\033[0;35m'
+    [CYAN]='\033[0;36m'
+    [WHITE]='\033[1;37m'
+    [NC]='\033[0m'
+)
+
+# Global variables
+declare -A SCRIPTS
+declare -A CATEGORIES
+declare -i SCRIPT_COUNT=0
+
+# Category names
+CATEGORIES=(
+    [browsers]="Browser Installation"
+    [discord]="Discord Setup"
+    [fastfetch]="Fastfetch Configuration"
+    [mkvmerge]="MKV Tools"
+    [neovim]="Neovim Setup"
+    [setup]="Development Tools"
+    [st]="Simple Terminal"
+    [system]="System Configuration"
+    [theming]="Theming & Appearance"
+    [wezterm]="WezTerm Terminal"
+)
+
+# Print functions
+print_color() {
+    local color=$1
+    shift
+    echo -e "${COLORS[$color]}$*${COLORS[NC]}"
+}
 
 print_header() {
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║                            ButterScripts Installer                           ║${NC}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
+    clear
+    print_color CYAN "╔══════════════════════════════════════════════════════════════════════════════╗"
+    print_color CYAN "║                           🧈 ButterScripts Installer                         ║"
+    print_color CYAN "╚══════════════════════════════════════════════════════════════════════════════╝"
     echo
 }
 
 print_category() {
-    echo -e "${BLUE}┌─ $1 ─────────────────────────────────────────────────────────────────────┐${NC}"
+    local category=$1
+    echo
+    print_color BLUE "━━━ $category ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
-print_category_end() {
-    echo -e "${BLUE}└─────────────────────────────────────────────────────────────────────────────┘${NC}"
-    echo
+get_script_description() {
+    local script=$1
+    local desc=""
+    
+    # Try to extract description from script comments
+    if [[ -f "$script" ]]; then
+        desc=$(head -20 "$script" | grep -m1 -E "^#\s*(Description|Purpose|About):" | sed 's/^#\s*\(Description\|Purpose\|About\):\s*//' || true)
+        
+        # If no formal description, try to get any comment after shebang
+        if [[ -z "$desc" ]]; then
+            desc=$(head -20 "$script" | grep -m1 "^#\s*[A-Z]" | sed 's/^#\s*//' || true)
+        fi
+    fi
+    
+    # Default descriptions for known scripts
+    if [[ -z "$desc" ]]; then
+        case "$(basename "$script")" in
+            install_browsers.sh) desc="Install various web browsers" ;;
+            butterdis_simple.sh) desc="Simple Discord installation" ;;
+            install_fastfetch.sh) desc="Install and configure Fastfetch" ;;
+            mergemkvs) desc="Merge multiple MKV files" ;;
+            buttervim.sh) desc="Install Neovim with custom config" ;;
+            build-neovim.sh) desc="Build Neovim from source" ;;
+            install_geany.sh) desc="Install Geany text editor" ;;
+            install_picom.sh) desc="Install Picom compositor" ;;
+            optional_tools.sh) desc="Install optional development tools" ;;
+            install_st.sh) desc="Install simple terminal (st)" ;;
+            add_bashrc.sh) desc="Add custom bash configuration" ;;
+            install_bluetooth.sh) desc="Configure Bluetooth support" ;;
+            install_lightdm.sh) desc="Install LightDM display manager" ;;
+            install_printer_support.sh) desc="Setup printer support" ;;
+            install_nerdfonts.sh) desc="Install Nerd Fonts collection" ;;
+            install_theme.sh) desc="Install GTK themes and icons" ;;
+            install_wezterm.sh) desc="Install WezTerm terminal" ;;
+            *) desc="No description available" ;;
+        esac
+    fi
+    
+    echo "$desc"
 }
 
 discover_scripts() {
-    declare -A categories
-    categories[setup]="System Setup Scripts"
-    categories[system]="System Configuration Scripts"
-    categories[browsers]="Browser Installation Scripts"
-    categories[config]="Configuration Scripts"
-    categories[discord]="Discord Scripts"
-    categories[fastfetch]="Fastfetch Setup Scripts"
-    categories[neovim]="Neovim Setup Scripts"
-    categories[theming]="Theming Scripts"
-    categories[wezterm]="Wezterm Installation Scripts"
+    SCRIPT_COUNT=0
+    SCRIPTS=()
+    
+    # Find all .sh files and executable scripts
+    while IFS= read -r -d '' script; do
+        # Skip the installer itself
+        [[ "$(basename "$script")" == "installer.sh" ]] && continue
+        
+        # Get relative path from script directory
+        local rel_path="${script#$SCRIPT_DIR/}"
+        local category="${rel_path%%/*}"
+        
+        # Skip if not in a recognized category
+        [[ -z "${CATEGORIES[$category]:-}" ]] && continue
+        
+        SCRIPT_COUNT=$((SCRIPT_COUNT + 1))
+        SCRIPTS[$SCRIPT_COUNT]="$rel_path"
+    done < <(find "$SCRIPT_DIR" -type f \( -name "*.sh" -o -executable \) -not -path "*/\.*" -print0 | sort -z)
+}
 
-    counter=1
-    declare -A script_map
-    declare -A script_paths
-
-    for category in setup system browsers config discord fastfetch neovim theming wezterm; do
-        if [ -d "$category" ]; then
-            scripts=($(find "$category" -name "*.sh" -type f | sort))
-            if [ ${#scripts[@]} -gt 0 ]; then
-                print_category "${categories[$category]}"
-                for script in "${scripts[@]}"; do
-                    script_name=$(basename "$script" .sh)
-                    
-                    # Skip the first 4 setup scripts (00-bash, 01-apps, 02-wm-dwm, 07-postinstall)
-                    if [[ "$category" == "setup" && ("$script_name" == "00-bash" || "$script_name" == "01-apps" || "$script_name" == "02-wm-dwm" || "$script_name" == "07-postinstall") ]]; then
-                        continue
-                    fi
-                    
-                    script_desc=$(head -10 "$script" | grep -E "^#.*[Dd]escription|^# " | head -1 | sed 's/^# *//' || echo "No description available")
-                    
-                    printf "${GREEN}%2d)${NC} %-30s ${YELLOW}%s${NC}\n" "$counter" "$script_name" "$script_desc"
-                    script_map[$counter]="$script"
-                    script_paths[$counter]="$script"
-                    ((counter++))
-                done
-                print_category_end
-            fi
+display_menu() {
+    local current_category=""
+    
+    for i in $(seq 1 $SCRIPT_COUNT | sort -n); do
+        local script="${SCRIPTS[$i]}"
+        local category="${script%%/*}"
+        local script_name="$(basename "$script" .sh)"
+        local description="$(get_script_description "$script")"
+        
+        # Print category header when it changes
+        if [[ "$category" != "$current_category" ]]; then
+            current_category="$category"
+            print_category "${CATEGORIES[$category]}"
         fi
+        
+        # Format: number) script_name - description
+        printf "  ${COLORS[GREEN]}%2d)${COLORS[NC]} %-25s ${COLORS[YELLOW]}%s${COLORS[NC]}\n" \
+            "$i" "$script_name" "$description"
     done
-
-    echo -e "${PURPLE}Special Options:${NC}"
-    echo -e "${GREEN} a)${NC} Run all setup scripts (00-bash.sh → 07-postinstall.sh)"
-    echo -e "${GREEN} q)${NC} Quit"
+    
     echo
-
-    return 0
+    print_color PURPLE "━━━ Options ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    print_color GREEN "  r) Refresh script list"
+    print_color GREEN "  h) Show help"
+    print_color GREEN "  q) Quit"
+    echo
 }
 
 run_script() {
     local script_path="$1"
-    local script_name=$(basename "$script_path")
+    local full_path="$SCRIPT_DIR/$script_path"
+    local script_name="$(basename "$script_path")"
     
-    echo -e "${YELLOW}Running: $script_name${NC}"
-    echo -e "${BLUE}Path: $script_path${NC}"
-    echo "─────────────────────────────────────────────────────────────────────────────"
-    
-    if [ -x "$script_path" ]; then
-        bash "$script_path"
-    else
-        chmod +x "$script_path"
-        bash "$script_path"
-    fi
-    
-    local exit_code=$?
-    echo "─────────────────────────────────────────────────────────────────────────────"
-    
-    if [ $exit_code -eq 0 ]; then
-        echo -e "${GREEN}✓ $script_name completed successfully${NC}"
-    else
-        echo -e "${RED}✗ $script_name failed with exit code $exit_code${NC}"
-    fi
+    echo
+    print_color YELLOW "┌─ Running: $script_name"
+    print_color YELLOW "└─ Path: $script_path"
     echo
     
-    return $exit_code
+    # Make executable if needed
+    [[ -x "$full_path" ]] || chmod +x "$full_path"
+    
+    # Run the script
+    if bash "$full_path"; then
+        echo
+        print_color GREEN "✓ $script_name completed successfully"
+    else
+        local exit_code=$?
+        echo
+        print_color RED "✗ $script_name failed with exit code $exit_code"
+        return $exit_code
+    fi
 }
 
-run_all_setup() {
-    echo -e "${YELLOW}Running all setup scripts in order...${NC}"
+show_help() {
+    print_header
+    print_color CYAN "Help & Usage"
     echo
-    
-    setup_scripts=(
-        "setup/00-bash.sh"
-        "setup/01-apps.sh"
-        "setup/02-wm-dwm.sh"
-        "setup/07-postinstall.sh"
-    )
-    
-    for script in "${setup_scripts[@]}"; do
-        if [ -f "$script" ]; then
-            run_script "$script"
-            echo -e "${CYAN}Press Enter to continue to next script, or Ctrl+C to stop...${NC}"
-            read -r
-        else
-            echo -e "${RED}Warning: $script not found, skipping...${NC}"
-        fi
-    done
-    
-    echo -e "${GREEN}All setup scripts completed!${NC}"
+    echo "This installer helps you run various setup and configuration scripts."
+    echo
+    print_color YELLOW "How to use:"
+    echo "  • Enter the number of the script you want to run"
+    echo "  • Scripts are organized by category"
+    echo "  • Some scripts may require sudo privileges"
+    echo
+    print_color YELLOW "Tips:"
+    echo "  • Read script descriptions before running"
+    echo "  • Check script contents if unsure what they do"
+    echo "  • Scripts are designed to be idempotent (safe to run multiple times)"
+    echo
+    print_color CYAN "Press Enter to return to menu..."
+    read -r
 }
 
 main() {
-    print_header
+    # Initial script discovery
+    discover_scripts
+    
+    if [[ $SCRIPT_COUNT -eq 0 ]]; then
+        print_color RED "No scripts found in the current directory!"
+        exit 1
+    fi
     
     while true; do
-        counter=1
-        declare -A script_map
+        print_header
+        display_menu
         
-        discover_scripts
-        
-        echo -n "Select a script to run (number/a/q): "
+        echo -n "Select an option: "
         read -r choice
-        echo
         
         case "$choice" in
             q|Q)
-                echo -e "${CYAN}Goodbye!${NC}"
+                echo
+                print_color CYAN "Thanks for using ButterScripts! 🧈"
                 exit 0
                 ;;
-            a|A)
-                run_all_setup
-                echo
-                echo -e "${CYAN}Press Enter to return to main menu...${NC}"
-                read -r
+            r|R)
+                discover_scripts
+                print_color GREEN "Script list refreshed!"
+                sleep 1
                 ;;
-            *[!0-9]*)
-                echo -e "${RED}Invalid choice. Please enter a number, 'a', or 'q'.${NC}"
-                echo
+            h|H)
+                show_help
+                ;;
+            ''|*[!0-9]*)
+                print_color RED "Invalid input. Please enter a number or letter option."
+                sleep 2
                 ;;
             *)
-                if [ "$choice" -ge 1 ] && [ "$choice" -lt "$counter" ]; then
-                    script_to_run=""
-                    current=1
-                    for category in setup system browsers config discord fastfetch neovim theming wezterm; do
-                        if [ -d "$category" ]; then
-                            scripts=($(find "$category" -name "*.sh" -type f | sort))
-                            for script in "${scripts[@]}"; do
-                                script_name=$(basename "$script" .sh)
-                                
-                                # Skip the first 4 setup scripts (00-bash, 01-apps, 02-wm-dwm, 07-postinstall)
-                                if [[ "$category" == "setup" && ("$script_name" == "00-bash" || "$script_name" == "01-apps" || "$script_name" == "02-wm-dwm" || "$script_name" == "07-postinstall") ]]; then
-                                    continue
-                                fi
-                                
-                                if [ "$current" -eq "$choice" ]; then
-                                    script_to_run="$script"
-                                    break 2
-                                fi
-                                ((current++))
-                            done
-                        fi
-                    done
-                    
-                    if [ -n "$script_to_run" ]; then
-                        run_script "$script_to_run"
-                        echo -e "${CYAN}Press Enter to return to main menu...${NC}"
-                        read -r
-                    fi
-                else
-                    echo -e "${RED}Invalid choice. Please select a number between 1 and $((counter-1)).${NC}"
+                if [[ $choice -ge 1 && $choice -le $SCRIPT_COUNT ]]; then
+                    run_script "${SCRIPTS[$choice]}"
                     echo
+                    print_color CYAN "Press Enter to continue..."
+                    read -r
+                else
+                    print_color RED "Invalid selection. Choose a number between 1 and $SCRIPT_COUNT"
+                    sleep 2
                 fi
                 ;;
         esac
     done
 }
 
-if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+# Run main function
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
