@@ -221,7 +221,9 @@ main() {
     echo
     
     # Check dependencies first
+    echo "Checking dependencies..."
     check_dependencies
+    echo
     
     # Setup search engines based on user preferences
     setup_search_engines
