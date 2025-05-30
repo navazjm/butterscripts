@@ -1,65 +1,101 @@
 #!/bin/bash
-# Simple Firefox Search Shortcuts Installer
+# Automated Firefox Search Engine Setup using policies.json
 
 set -e
 
-# Check if sqlite3 exists
-if ! command -v sqlite3 >/dev/null; then
-    echo "Error: sqlite3 not found. Please install it first."
-    exit 1
-fi
+# Find Firefox installation directory
+find_firefox_dir() {
+    case "$(uname)" in
+        Darwin)
+            echo "/Applications/Firefox.app/Contents/Resources"
+            ;;
+        Linux)
+            # Try common locations
+            for dir in /usr/lib/firefox /opt/firefox /usr/lib64/firefox; do
+                if [[ -d "$dir" ]]; then
+                    echo "$dir"
+                    return
+                fi
+            done
+            # Fallback to system-wide config
+            echo "/etc/firefox"
+            ;;
+        *)
+            echo "Unsupported OS"
+            exit 1
+            ;;
+    esac
+}
 
-# Find Firefox profile
-case "$(uname)" in
-    Darwin) PROFILE_DIR="$HOME/Library/Application Support/Firefox/Profiles" ;;
-    Linux) PROFILE_DIR="$HOME/.mozilla/firefox" ;;
-    *) echo "Unsupported OS"; exit 1 ;;
-esac
+FIREFOX_DIR=$(find_firefox_dir)
+DIST_DIR="$FIREFOX_DIR/distribution"
 
-PROFILE=$(find "$PROFILE_DIR" -name "*default*" -type d | head -1)
-if [[ -z "$PROFILE" ]]; then
-    echo "Firefox profile not found"
-    exit 1
-fi
+echo "Setting up Firefox search engines..."
+echo "Firefox directory: $FIREFOX_DIR"
 
-DB="$PROFILE/places.sqlite"
-if [[ ! -f "$DB" ]]; then
-    echo "Firefox database not found"
-    exit 1
-fi
+# Create distribution directory if it doesn't exist
+sudo mkdir -p "$DIST_DIR"
 
-# Check if Firefox is running
-if pgrep firefox >/dev/null; then
-    echo "Please close Firefox first"
-    exit 1
-fi
+# Create policies.json with search engines
+sudo tee "$DIST_DIR/policies.json" > /dev/null << 'EOF'
+{
+  "policies": {
+    "SearchEngines": {
+      "Add": [
+        {
+          "Name": "Google Web",
+          "URLTemplate": "https://www.google.com/search?udm=14&q={searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://www.google.com/favicon.ico",
+          "Alias": "@gw",
+          "Description": "Google Web Search (text only)"
+        },
+        {
+          "Name": "Google Images", 
+          "URLTemplate": "https://www.google.com/search?udm=2&q={searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://www.google.com/favicon.ico",
+          "Alias": "@gi",
+          "Description": "Google Image Search"
+        },
+        {
+          "Name": "Google News",
+          "URLTemplate": "https://www.google.com/search?udm=12&q={searchTerms}",
+          "Method": "GET", 
+          "IconURL": "https://www.google.com/favicon.ico",
+          "Alias": "@gn",
+          "Description": "Google News Search"
+        },
+        {
+          "Name": "Google Maps",
+          "URLTemplate": "https://www.google.com/maps/search/{searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://www.google.com/favicon.ico", 
+          "Alias": "@gm",
+          "Description": "Google Maps Search"
+        },
+        {
+          "Name": "DuckDuckGo",
+          "URLTemplate": "https://duckduckgo.com/?q={searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://duckduckgo.com/favicon.ico",
+          "Alias": "@ddg", 
+          "Description": "DuckDuckGo Search"
+        }
+      ]
+    }
+  }
+}
+EOF
 
-# Backup
-cp "$DB" "$DB.backup"
-
-# Search engines
-declare -A ENGINES=(
-    ["@gw"]="Google Web|https://google.com/search?q=%s"
-    ["@gi"]="Google Images|https://google.com/search?tbm=isch&q=%s"
-    ["@gm"]="Google Maps|https://maps.google.com/maps?q=%s"
-    ["@yt"]="YouTube|https://youtube.com/results?search_query=%s"
-    ["@w"]="Wikipedia|https://en.wikipedia.org/wiki/Special:Search/%s"
-)
-
-echo "Adding search shortcuts..."
-
-for keyword in "${!ENGINES[@]}"; do
-    IFS='|' read -r title url <<< "${ENGINES[$keyword]}"
-    echo "  $keyword -> $title"
-    
-    # Add to places
-    sqlite3 "$DB" "INSERT OR IGNORE INTO moz_places (url, title) VALUES ('$url', '$title');"
-    
-    # Get place ID
-    place_id=$(sqlite3 "$DB" "SELECT id FROM moz_places WHERE url='$url' LIMIT 1;")
-    
-    # Add keyword
-    sqlite3 "$DB" "INSERT OR REPLACE INTO moz_keywords (keyword, place_id) VALUES ('$keyword', $place_id);"
-done
-
-echo "Done! Restart Firefox and use shortcuts like: @gw search term"
+echo "✅ Firefox search engines configured!"
+echo ""
+echo "Restart Firefox to see the new search engines."
+echo "You can use them with keywords like:"
+echo "  @gw search term    -> Google Web"
+echo "  @gi search term    -> Google Images" 
+echo "  @gn search term    -> Google News"
+echo "  @gm search term    -> Google Maps"
+echo "  @ddg search term   -> DuckDuckGo"
+echo ""
+echo "The search engines will appear in Settings > Search"
