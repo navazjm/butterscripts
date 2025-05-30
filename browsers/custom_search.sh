@@ -55,18 +55,21 @@ find_firefox_profile() {
         exit 1
     fi
     
-    # Find default profile (usually contains 'default')
+    # Find default profile (usually contains 'default-release' for modern Firefox or 'default' for older/ESR)
+    # Profile names look like: 9obz51ui.default-release, abc123def.default, etc.
     local default_profile=$(find "$profile_dir" -maxdepth 1 -type d -name "*default*" | head -1)
     
     if [[ -n "$default_profile" ]]; then
         echo "$default_profile"
     else
-        # Fall back to first profile found
-        local first_profile=$(find "$profile_dir" -maxdepth 1 -type d ! -name "." ! -name ".." | head -1)
+        # Fall back to first profile found (any directory that's not . or ..)
+        local first_profile=$(find "$profile_dir" -maxdepth 1 -type d ! -name "." ! -name ".." ! -name "Crash Reports" ! -name "Pending Pings" | head -1)
         if [[ -n "$first_profile" ]]; then
             echo "$first_profile"
         else
-            echo -e "${RED}No Firefox profiles found${NC}"
+            echo -e "${RED}No Firefox profiles found in $profile_dir${NC}"
+            echo "Available directories:"
+            ls -la "$profile_dir" 2>/dev/null || echo "Cannot list directory contents"
             exit 1
         fi
     fi
@@ -248,7 +251,7 @@ main() {
         echo "  sxm coffee shops    -> SearXNG Maps search"
     fi
     echo
-    echo "Restart Firefox to ensure changes take effect."
+    echo "Restart Firefox (or Firefox ESR) to ensure changes take effect."
 }
 
 # Run main function
