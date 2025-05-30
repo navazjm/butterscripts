@@ -12,19 +12,19 @@ NC='\033[0m' # No Color
 
 # Base search engines configuration (always included)
 declare -A BASE_SEARCH_ENGINES=(
-    ["gw"]="Google Web|https://google.com/search?udm=14&q=%s"
-    ["gm"]="Google Maps|https://www.google.com/maps/search/%s"
-    ["gi"]="Google Images|https://google.com/search?udm=2&q=%s"
-    ["gn"]="Google News|https://google.com/search?udm=12&q=%s"
+    ["@gw"]="Google Web|https://google.com/search?udm=14&q=%s"
+    ["@gm"]="Google Maps|https://www.google.com/maps/search/%s"
+    ["@gi"]="Google Images|https://google.com/search?udm=2&q=%s"
+    ["@gn"]="Google News|https://google.com/search?udm=12&q=%s"
 )
 
 # SearXNG search engines (added optionally)
 declare -A SEARXNG_ENGINES=(
-    ["sx"]="SearXNG|%SEARXNG_URL%/search?q=%s"
-    ["sxi"]="SearXNG Images|%SEARXNG_URL%/search?q=%s&categories=images"
-    ["sxn"]="SearXNG News|%SEARXNG_URL%/search?q=%s&categories=news"
-    ["sxv"]="SearXNG Videos|%SEARXNG_URL%/search?q=%s&categories=videos"
-    ["sxm"]="SearXNG Maps|%SEARXNG_URL%/search?q=%s&categories=map"
+    ["@sx"]="SearXNG|%SEARXNG_URL%/search?q=%s"
+    ["@sxi"]="SearXNG Images|%SEARXNG_URL%/search?q=%s&categories=images"
+    ["@sxn"]="SearXNG News|%SEARXNG_URL%/search?q=%s&categories=news"
+    ["@sxv"]="SearXNG Videos|%SEARXNG_URL%/search?q=%s&categories=videos"
+    ["@sxm"]="SearXNG Maps|%SEARXNG_URL%/search?q=%s&categories=map"
 )
 
 # Global search engines array (will be populated based on user choice)
@@ -154,36 +154,63 @@ add_search_bookmark() {
     # Get current timestamp in microseconds
     local date_added=$(date +%s)000000
     
-    # Check if bookmark with this keyword already exists
-    local existing=$(sqlite3 "$db_file" "SELECT id FROM moz_bookmarks WHERE title='$title' LIMIT 1;" 2>/dev/null || echo "")
+    echo "Adding: $keyword ($title)"
     
-    if [[ -n "$existing" ]]; then
-        echo "Updating existing bookmark: $title"
+    # First, insert into moz_places (or update if exists)
+    sqlite3 "$db_file" "
+        INSERT OR IGNORE INTO moz_places (url, title, visit_count, hidden, typed, frecency, last_visit_date, guid)
+        VALUES ('$url', '$title', 0, 0, 0, -1, $date_added, 
+                lower(hex(randomblob(8))) || '-' || lower(hex(randomblob(2))) || '-4' || 
+                substr(lower(hex(randomblob(2))),2) || '-' || 
+                substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || 
+                '-' || lower(hex(randomblob(6))));
+    "
+    
+    # Get the place_id for this URL
+    local place_id=$(sqlite3 "$db_file" "SELECT id FROM moz_places WHERE url='$url' LIMIT 1;")
+    
+    if [[ -z "$place_id" ]]; then
+        echo "Error: Could not find place_id for $url"
+        return 1
+    fi
+    
+    # Insert or update keyword in moz_keywords
+    sqlite3 "$db_file" "
+        INSERT OR REPLACE INTO moz_keywords (keyword, place_id, post_data)
+        VALUES ('$keyword', $place_id, NULL);
+    "
+    
+    # Get the keyword_id
+    local keyword_id=$(sqlite3 "$db_file" "SELECT id FROM moz_keywords WHERE keyword='$keyword' LIMIT 1;")
+    
+    if [[ -z "$keyword_id" ]]; then
+        echo "Error: Could not find keyword_id for $keyword"
+        return 1
+    fi
+    
+    # Check if bookmark already exists
+    local existing_bookmark=$(sqlite3 "$db_file" "SELECT id FROM moz_bookmarks WHERE fk=$place_id AND type=1 LIMIT 1;")
+    
+    if [[ -n "$existing_bookmark" ]]; then
+        # Update existing bookmark with keyword
         sqlite3 "$db_file" "
-            UPDATE moz_places SET url='$url' WHERE id=(
-                SELECT fk FROM moz_bookmarks WHERE title='$title'
-            );
-            UPDATE moz_keywords SET keyword='$keyword' WHERE place_id=(
-                SELECT fk FROM moz_bookmarks WHERE title='$title'
-            );
+            UPDATE moz_bookmarks 
+            SET keyword_id=$keyword_id, title='$title', lastModified=$date_added
+            WHERE id=$existing_bookmark;
         "
     else
-        echo "Adding new bookmark: $title"
+        # Create new bookmark
         sqlite3 "$db_file" "
-            INSERT OR IGNORE INTO moz_places (url, title, visit_count, hidden, typed, frecency, last_visit_date, guid)
-            VALUES ('$url', '$title', 0, 0, 0, -1, $date_added, lower(hex(randomblob(8))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6))));
-            
-            INSERT INTO moz_bookmarks (type, fk, parent, position, title, keyword, folder_type, dateAdded, lastModified, guid)
-            SELECT 1, moz_places.id, 
+            INSERT INTO moz_bookmarks (type, fk, parent, position, title, keyword_id, dateAdded, lastModified, guid)
+            SELECT 1, $place_id, 
                    (SELECT id FROM moz_bookmarks WHERE parent=0 AND type=2 LIMIT 1),
-                   (SELECT COALESCE(MAX(position), 0) + 1 FROM moz_bookmarks WHERE parent=(SELECT id FROM moz_bookmarks WHERE parent=0 AND type=2 LIMIT 1)),
-                   '$title', '$keyword', NULL, $date_added, $date_added,
-                   lower(hex(randomblob(8))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))
-            FROM moz_places WHERE url='$url';
-            
-            INSERT OR REPLACE INTO moz_keywords (keyword, place_id, post_data)
-            SELECT '$keyword', moz_places.id, NULL
-            FROM moz_places WHERE url='$url';
+                   (SELECT COALESCE(MAX(position), 0) + 1 FROM moz_bookmarks 
+                    WHERE parent=(SELECT id FROM moz_bookmarks WHERE parent=0 AND type=2 LIMIT 1)),
+                   '$title', $keyword_id, $date_added, $date_added,
+                   lower(hex(randomblob(8))) || '-' || lower(hex(randomblob(2))) || '-4' || 
+                   substr(lower(hex(randomblob(2))),2) || '-' || 
+                   substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || 
+                   '-' || lower(hex(randomblob(6)));
         "
     fi
 }
@@ -192,6 +219,9 @@ add_search_bookmark() {
 main() {
     echo -e "${GREEN}Firefox Search Shortcuts Installer${NC}"
     echo
+    
+    # Check dependencies first
+    check_dependencies
     
     # Setup search engines based on user preferences
     setup_search_engines
@@ -237,18 +267,18 @@ main() {
     echo -e "${GREEN}Search shortcuts installed successfully!${NC}"
     echo
     echo "Usage in Firefox address bar:"
-    echo "  gw pizza recipes    -> Google Web search"
-    echo "  gm coffee shops     -> Google Maps search"
-    echo "  gi sunset photos    -> Google Images search"
-    echo "  gn tech news        -> Google News search"
+    echo "  @gw pizza recipes   -> Google Web search"
+    echo "  @gm coffee shops    -> Google Maps search"
+    echo "  @gi sunset photos   -> Google Images search"
+    echo "  @gn tech news       -> Google News search"
     
     # Show SearXNG usage only if it was added
-    if [[ -n "${SEARCH_ENGINES[sx]:-}" ]]; then
-        echo "  sx privacy tools    -> SearXNG general search"
-        echo "  sxi sunset photos   -> SearXNG Images search"
-        echo "  sxn tech news       -> SearXNG News search"
-        echo "  sxv funny cats      -> SearXNG Videos search"
-        echo "  sxm coffee shops    -> SearXNG Maps search"
+    if [[ -n "${SEARCH_ENGINES[@sx]:-}" ]]; then
+        echo "  @sx privacy tools   -> SearXNG general search"
+        echo "  @sxi sunset photos  -> SearXNG Images search"
+        echo "  @sxn tech news      -> SearXNG News search"
+        echo "  @sxv funny cats     -> SearXNG Videos search"
+        echo "  @sxm coffee shops   -> SearXNG Maps search"
     fi
     echo
     echo "Restart Firefox (or Firefox ESR) to ensure changes take effect."
