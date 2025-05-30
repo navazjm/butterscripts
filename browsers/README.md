@@ -20,34 +20,35 @@ A simple multi-browser installer for Debian-based Linux systems.
 To set up Butter Browsers:
 ```bash
 # Download the script
-wget -O butterbrowsers.sh https://raw.githubusercontent.com/yourusername/repository/main/butterbrowsers.sh
+wget -O install_browsers.sh https://raw.githubusercontent.com/yourusername/repository/main/install_browsers.sh
 
 # Make executable
-chmod +x butterbrowsers.sh
+chmod +x install_browsers.sh
 
 # Run the script
-./butterbrowsers.sh
+./install_browsers.sh
 ```
 
 ## Usage
 ```bash
 # Run the script and select browsers
-./butterbrowsers.sh
+./install_browsers.sh
 
 # Install specific browsers by number
 # Example: Install Firefox (1) and Brave (3)
-./butterbrowsers.sh
+./install_browsers.sh
 # Then enter: 1 3
 ```
 
 ## Supported Browsers
-1. **Firefox** - Latest direct from Mozilla
+1. **Firefox** - Latest from Mozilla APT repository
 2. **LibreWolf** - Privacy-focused Firefox fork
 3. **Brave** - Privacy-focused Chromium browser
 4. **Floorp** - Customizable Firefox-based browser
 5. **Vivaldi** - Feature-rich Chromium browser
-6. **Thorium** - Performance-optimized Chromium
-7. **Zen Browser** - Tranquil, distraction-free browsing
+6. **Zen Browser** - Tranquil, distraction-free browsing (AppImage)
+7. **Chromium** - Open-source base of Chrome
+8. **Ungoogled Chromium** - Chromium without Google integration
 
 ## How It Works
 The script:
@@ -72,8 +73,8 @@ Made for Debian users who want the latest browser versions without the hassle.
 
 ## Updating Browsers
 
-- **Repository browsers** (LibreWolf, Brave, Floorp, Vivaldi, Thorium) will update through your system's package manager
-- **Firefox and Zen Browser** can be updated by running the script again
+- **Repository browsers** (Firefox, LibreWolf, Brave, Floorp, Vivaldi, Chromium, Ungoogled Chromium) will update through your system's package manager
+- **Zen Browser** (AppImage) can be updated by running the script again
 
 ---
 
