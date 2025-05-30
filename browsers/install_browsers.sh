@@ -111,52 +111,43 @@ command_exists() {
 # Function to install Firefox
 install_firefox() {
     # Check if Firefox is already installed
-    if command_exists firefox && [ -d "/opt/firefox" ]; then
+    if is_installed firefox-esr || is_installed firefox; then
         echo -e "${GREEN}Firefox is already installed. Skipping installation.${NC}"
         return
     fi
     
     echo -e "${GREEN}Installing Firefox Latest...${NC}"
     
-    # Define variables
-    FIREFOX_DIR="/opt/firefox"
-    FIREFOX_BIN="/usr/local/bin/firefox"
-    DESKTOP_FILE="/usr/local/share/applications/firefox.desktop"
-    TAR_FILE="firefox.tar.xz"
-    TEMP_DIR="/opt/firefox-latest"
-
-    # Function to clean up old Firefox installation
-    cleanup() {
-        echo -e "${YELLOW}Cleaning up old Firefox installation...${NC}"
-        sudo rm -rf "$FIREFOX_DIR"
-        sudo rm -f "$FIREFOX_BIN"
-        sudo rm -f "$DESKTOP_FILE"
-    }
-
-    # Check if Firefox is installed and clean up if necessary
-    if [ -d "$FIREFOX_DIR" ] || [ -f "$FIREFOX_BIN" ]; then
-        cleanup
+    # Install dependencies
+    ensure_dependencies
+    
+    # Remove any old Mozilla repository files if they exist
+    sudo rm -f /etc/apt/sources.list.d/mozilla.list
+    sudo rm -f /etc/apt/keyrings/packages.mozilla.org.asc
+    
+    # Create keyrings directory if it doesn't exist
+    sudo install -d -m 0755 /etc/apt/keyrings
+    
+    # Import the Mozilla APT repository signing key
+    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+    
+    # Add the Mozilla APT repository
+    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+    
+    # Configure APT to prioritize packages from the Mozilla repository
+    echo '
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+' | sudo tee /etc/apt/preferences.d/mozilla
+    
+    # Update and install Firefox
+    sudo apt update
+    if ! sudo apt install -y firefox; then
+        echo -e "${RED}Failed to install Firefox.${NC}"
+        return 1
     fi
-
-    # Install or update Firefox
-    echo -e "${CYAN}Retrieving the latest Firefox tar.xz file...${NC}"
-    wget "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -O "$TAR_FILE"
-
-    echo -e "${CYAN}Extracting files to a temporary directory...${NC}"
-    sudo mkdir -p "$TEMP_DIR"
-    sudo tar -xvf "$TAR_FILE" -C "$TEMP_DIR" --strip-components=1
-    rm "$TAR_FILE"
-
-    echo -e "${CYAN}Moving extracted files to /opt/firefox...${NC}"
-    sudo rm -rf "$FIREFOX_DIR"
-    sudo mv "$TEMP_DIR" "$FIREFOX_DIR"
-
-    echo -e "${CYAN}Creating symbolic link in /usr/local/bin...${NC}"
-    sudo ln -sf "$FIREFOX_DIR/firefox" "$FIREFOX_BIN"
-
-    echo -e "${CYAN}Downloading official Firefox desktop entry...${NC}"
-    sudo wget "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop" -P /usr/local/share/applications
-
+    
     echo -e "${GREEN}Firefox installation completed.${NC}"
     echo -e "${YELLOW}You can run Firefox by typing 'firefox' in the terminal or launching it from the applications menu.${NC}"
 }
