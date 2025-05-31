@@ -62,7 +62,7 @@ git clone https://github.com/drewgrif/geany-themes.git "$TEMP_THEMES_DIR"
 
 # Copy all .conf files to the colorschemes directory
 if [ -d "$TEMP_THEMES_DIR" ]; then
-    cp "$TEMP_THEMES_DIR"/*.conf "$COLORSCHEMES_DIR/" 2>/dev/null || echo -e "${YELLOW}Note: Some theme files may not have been copied${NC}"
+    cp "$TEMP_THEMES_DIR/colorschemes"/*.conf "$COLORSCHEMES_DIR/" 2>/dev/null || echo -e "${YELLOW}Note: Some theme files may not have been copied${NC}"
     echo -e "${GREEN}Custom color schemes installed successfully!${NC}"
     
     # List available themes
