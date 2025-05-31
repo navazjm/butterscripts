@@ -112,8 +112,35 @@ command_exists() {
 install_firefox() {
     # Check if Firefox is already installed
     if is_installed firefox-esr || is_installed firefox; then
-        echo -e "${GREEN}Firefox is already installed. Skipping installation.${NC}"
-        return
+        if is_installed firefox-esr && ! is_installed firefox; then
+            echo -e "${YELLOW}Firefox ESR is currently installed.${NC}"
+            echo -e "${CYAN}Choose an option:${NC}"
+            echo -e "${CYAN}1. ${NC}Install latest Firefox alongside ESR (both will be available)"
+            echo -e "${CYAN}2. ${NC}Remove ESR and install latest Firefox"
+            echo -e "${CYAN}3. ${NC}Skip installation (keep ESR only)"
+            read -p "Enter your choice (1-3): " firefox_choice
+            
+            case $firefox_choice in
+                1)
+                    echo -e "${GREEN}Installing Firefox latest alongside ESR...${NC}"
+                    ;;
+                2)
+                    echo -e "${GREEN}Removing Firefox ESR and installing latest...${NC}"
+                    sudo apt remove -y firefox-esr
+                    ;;
+                3)
+                    echo -e "${GREEN}Keeping Firefox ESR. Skipping installation.${NC}"
+                    return
+                    ;;
+                *)
+                    echo -e "${RED}Invalid choice. Skipping installation.${NC}"
+                    return
+                    ;;
+            esac
+        else
+            echo -e "${GREEN}Firefox is already installed. Skipping installation.${NC}"
+            return
+        fi
     fi
     
     echo -e "${GREEN}Installing Firefox Latest...${NC}"
