@@ -35,15 +35,16 @@ show_menu() {
     echo -e "${CYAN}=========================================================${NC}"
     echo -e "${YELLOW}Enter numbers of browsers to install (separated by spaces):${NC}"
     echo -e "${CYAN}1. ${NC}Firefox Latest"
-    echo -e "${CYAN}2. ${NC}LibreWolf"
-    echo -e "${CYAN}3. ${NC}Brave"
-    echo -e "${CYAN}4. ${NC}Floorp"
-    echo -e "${CYAN}5. ${NC}Vivaldi"
-    echo -e "${CYAN}6. ${NC}Zen Browser"
-    echo -e "${CYAN}7. ${NC}Chromium"
-    echo -e "${CYAN}8. ${NC}Ungoogled Chromium"
-    echo -e "${CYAN}9. ${NC}All Browsers"
-    echo -e "${CYAN}10. ${NC}Exit"
+    echo -e "${CYAN}2. ${NC}Firefox ESR"
+    echo -e "${CYAN}3. ${NC}LibreWolf"
+    echo -e "${CYAN}4. ${NC}Brave"
+    echo -e "${CYAN}5. ${NC}Floorp"
+    echo -e "${CYAN}6. ${NC}Vivaldi"
+    echo -e "${CYAN}7. ${NC}Zen Browser"
+    echo -e "${CYAN}8. ${NC}Chromium"
+    echo -e "${CYAN}9. ${NC}Ungoogled Chromium"
+    echo -e "${CYAN}10. ${NC}All Browsers"
+    echo -e "${CYAN}11. ${NC}Exit"
     echo -e "${CYAN}=========================================================${NC}"
     
     # Simple read command with normal terminal behavior
@@ -55,15 +56,16 @@ show_menu() {
         exit 0
     fi
     
-    # Check if user wants to exit with option 10
-    if [[ "$input" == "10" ]]; then
+    # Check if user wants to exit with option 11
+    if [[ "$input" == "11" ]]; then
         echo -e "${YELLOW}Exiting...${NC}"
         exit 0
     fi
     
-    # Install all browsers if option 9 is selected
-    if [[ "$input" == "9" ]]; then
+    # Install all browsers if option 10 is selected
+    if [[ "$input" == "10" ]]; then
         install_firefox
+        install_firefox_esr
         install_librewolf
         install_brave
         install_floorp
@@ -79,13 +81,14 @@ show_menu() {
     for choice in $input; do
         case $choice in
             1) install_firefox ;;
-            2) install_librewolf ;;
-            3) install_brave ;;
-            4) install_floorp ;;
-            5) install_vivaldi ;;
-            6) install_zen ;;
-            7) install_chromium ;;
-            8) install_ungoogled_chromium ;;
+            2) install_firefox_esr ;;
+            3) install_librewolf ;;
+            4) install_brave ;;
+            5) install_floorp ;;
+            6) install_vivaldi ;;
+            7) install_zen ;;
+            8) install_chromium ;;
+            9) install_ungoogled_chromium ;;
             *) echo -e "${RED}Invalid choice: $choice (skipping)${NC}" ;;
         esac
     done
@@ -177,6 +180,30 @@ Pin-Priority: 1000
     
     echo -e "${GREEN}Firefox installation completed.${NC}"
     echo -e "${YELLOW}You can run Firefox by typing 'firefox' in the terminal or launching it from the applications menu.${NC}"
+}
+
+# Function to install Firefox ESR
+install_firefox_esr() {
+    # Check if Firefox ESR is already installed
+    if is_installed firefox-esr; then
+        echo -e "${GREEN}Firefox ESR is already installed. Skipping installation.${NC}"
+        return
+    fi
+    
+    echo -e "${GREEN}Installing Firefox ESR...${NC}"
+    
+    # Install dependencies
+    ensure_dependencies
+    
+    # Update and install Firefox ESR from Debian repositories
+    sudo apt update
+    if ! sudo apt install -y firefox-esr; then
+        echo -e "${RED}Failed to install Firefox ESR.${NC}"
+        return 1
+    fi
+    
+    echo -e "${GREEN}Firefox ESR installation completed.${NC}"
+    echo -e "${YELLOW}You can run Firefox ESR by typing 'firefox-esr' in the terminal or launching it from the applications menu.${NC}"
 }
 
 # Function to install LibreWolf

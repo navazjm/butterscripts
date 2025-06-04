@@ -79,7 +79,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
           \"URLTemplate\": \"$SEARXNG_URL/search?q={searchTerms}\",
           \"Method\": \"GET\",
           \"IconURL\": \"$SEARXNG_URL/favicon.ico\",
-          \"Alias\": \"@sx\",
+          \"Alias\": \":sx\",
           \"Description\": \"SearXNG Privacy Search\"
         },
         {
@@ -87,7 +87,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
           \"URLTemplate\": \"$SEARXNG_URL/search?q={searchTerms}&categories=images\",
           \"Method\": \"GET\", 
           \"IconURL\": \"$SEARXNG_URL/favicon.ico\",
-          \"Alias\": \"@sxi\",
+          \"Alias\": \":sxi\",
           \"Description\": \"SearXNG Image Search\"
         },
         {
@@ -95,7 +95,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
           \"URLTemplate\": \"$SEARXNG_URL/search?q={searchTerms}&categories=news\",
           \"Method\": \"GET\",
           \"IconURL\": \"$SEARXNG_URL/favicon.ico\", 
-          \"Alias\": \"@sxn\",
+          \"Alias\": \":sxn\",
           \"Description\": \"SearXNG News Search\"
         },
         {
@@ -103,7 +103,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
           \"URLTemplate\": \"$SEARXNG_URL/search?q={searchTerms}&categories=videos\",
           \"Method\": \"GET\",
           \"IconURL\": \"$SEARXNG_URL/favicon.ico\",
-          \"Alias\": \"@sxv\", 
+          \"Alias\": \":sxv\", 
           \"Description\": \"SearXNG Video Search\"
         }"
         echo "✅ SearXNG engines configured for: $SEARXNG_URL"
@@ -127,7 +127,7 @@ sudo tee "$DIST_DIR/policies.json" > /dev/null << EOF
           "URLTemplate": "https://www.google.com/search?udm=14&q={searchTerms}",
           "Method": "GET",
           "IconURL": "https://www.google.com/favicon.ico",
-          "Alias": "@gw",
+          "Alias": ":gw",
           "Description": "Google Web Search (text only)"
         },
         {
@@ -135,7 +135,7 @@ sudo tee "$DIST_DIR/policies.json" > /dev/null << EOF
           "URLTemplate": "https://www.google.com/search?udm=2&q={searchTerms}",
           "Method": "GET",
           "IconURL": "https://www.google.com/favicon.ico",
-          "Alias": "@gi",
+          "Alias": ":gi",
           "Description": "Google Image Search"
         },
         {
@@ -143,7 +143,7 @@ sudo tee "$DIST_DIR/policies.json" > /dev/null << EOF
           "URLTemplate": "https://www.google.com/search?udm=12&q={searchTerms}",
           "Method": "GET", 
           "IconURL": "https://www.google.com/favicon.ico",
-          "Alias": "@gn",
+          "Alias": ":gn",
           "Description": "Google News Search"
         },
         {
@@ -151,7 +151,7 @@ sudo tee "$DIST_DIR/policies.json" > /dev/null << EOF
           "URLTemplate": "https://www.google.com/maps/search/{searchTerms}",
           "Method": "GET",
           "IconURL": "https://www.google.com/favicon.ico", 
-          "Alias": "@gm",
+          "Alias": ":gm",
           "Description": "Google Maps Search"
         },
         {
@@ -159,7 +159,7 @@ sudo tee "$DIST_DIR/policies.json" > /dev/null << EOF
           "URLTemplate": "https://duckduckgo.com/?q={searchTerms}",
           "Method": "GET",
           "IconURL": "https://duckduckgo.com/favicon.ico",
-          "Alias": "@ddg", 
+          "Alias": ":ddg", 
           "Description": "DuckDuckGo Search"
         }$SEARXNG_ENGINES
       ]
@@ -172,17 +172,17 @@ echo "✅ Firefox search engines configured!"
 echo ""
 echo "Restart Firefox to see the new search engines."
 echo "You can use them with keywords like:"
-echo "  @gw search term    -> Google Web"
-echo "  @gi search term    -> Google Images" 
-echo "  @gn search term    -> Google News"
-echo "  @gm search term    -> Google Maps"
-echo "  @ddg search term   -> DuckDuckGo"
+echo "  :gw search term    -> Google Web"
+echo "  :gi search term    -> Google Images" 
+echo "  :gn search term    -> Google News"
+echo "  :gm search term    -> Google Maps"
+echo "  :ddg search term   -> DuckDuckGo"
 
 if [[ -n "$SEARXNG_URL" ]]; then
-    echo "  @sx search term    -> SearXNG"
-    echo "  @sxi search term   -> SearXNG Images"
-    echo "  @sxn search term   -> SearXNG News" 
-    echo "  @sxv search term   -> SearXNG Videos"
+    echo "  :sx search term    -> SearXNG"
+    echo "  :sxi search term   -> SearXNG Images"
+    echo "  :sxn search term   -> SearXNG News" 
+    echo "  :sxv search term   -> SearXNG Videos"
 fi
 
 echo ""
