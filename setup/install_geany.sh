@@ -341,6 +341,10 @@ project_file_path=$HOME/projects
 recent_files=
 recent_projects=
 current_page=0
+
+[keybindings]
+toggle_sidebar=<Alt>comma
+toggle_messages=<Alt>period
 EOF
 
 # Create projects directory if it doesn't exist
