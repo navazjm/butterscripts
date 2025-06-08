@@ -589,8 +589,8 @@ EOF
 mkdir -p "$CONFIG_DIR/plugins/treebrowser"
 cat > "$CONFIG_DIR/plugins/treebrowser/treebrowser.conf" << EOF
 [treebrowser]
-open_external_cmd=xdg-open '%d'
-open_terminal=st
+open_external_cmd=wezterm -e nvim '%f'
+open_terminal=wezterm
 reverse_filter=false
 one_click_chdoc=false
 show_hidden_files=true
