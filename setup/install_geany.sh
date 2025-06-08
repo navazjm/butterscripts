@@ -126,7 +126,7 @@ tab_close_switch_to_mru=false
 tab_pos_sidebar=2
 sidebar_pos=0
 symbols_sort_mode=0
-msgwin_orientation=0
+msgwin_orientation=1
 highlighting_invert_all=false
 pref_main_search_use_current_word=true
 check_detect_indent=false
@@ -183,9 +183,9 @@ beep_on_errors=true
 auto_focus=false
 sidebar_symbol_visible=false
 sidebar_openfiles_visible=false
-editor_font=Monospace 12
+editor_font=SauceCodePro Nerd Font Mono Regular 16
 tagbar_font=Sans 9
-msgwin_font=Monospace 9
+msgwin_font=SauceCodePro Nerd Font Mono Regular 12
 show_notebook_tabs=true
 show_tab_cross=true
 tab_order_ltr=true
@@ -230,8 +230,8 @@ pref_toolbar_show=true
 pref_toolbar_append_to_menu=true
 pref_toolbar_use_gtk_default_style=false
 pref_toolbar_use_gtk_default_icon=false
-pref_toolbar_icon_style=0
-pref_toolbar_icon_size=1
+pref_toolbar_icon_style=3
+pref_toolbar_icon_size=0
 pref_template_developer=
 pref_template_company=
 pref_template_mail=
@@ -304,7 +304,7 @@ active_plugins=$PLUGIN_PATHS
 send_cmd_prefix=
 send_selection_unsafe=false
 load_vte=true
-font=Monospace 10
+font=SauceCodePro Nerd Font Mono Regular 14
 scroll_on_key=true
 scroll_on_out=true
 enable_bash_keys=true
@@ -352,25 +352,61 @@ cat > "$CONFIG_DIR/plugins/markdown/markdown.conf" << EOF
 [markdown]
 preview_in_msgwin=true
 preview_in_sidebar=false
+
+[general]
+template=$CONFIG_DIR/plugins/markdown/template.html
+
+[view]
+position=1
+font_name=Serif
+code_font_name=Mono
+font_point_size=12
+code_font_point_size=12
+bg_color=#ffffff
+fg_color=#000000
 EOF
 
-# Configure Addons plugin for color calltips
+# Configure Addons plugin
 mkdir -p "$CONFIG_DIR/plugins/addons"
 cat > "$CONFIG_DIR/plugins/addons/addons.conf" << EOF
 [addons]
-show_color_tips=true
-color_tips_enabled=true
+show_toolbar_doclist_item=true
+doclist_sort_mode=2
+enable_openuri=false
+enable_tasks=true
+tasks_token_list=TODO;FIXME
+tasks_scan_all_documents=false
+enable_systray=false
+enable_bookmarklist=false
+enable_markword=false
+enable_markword_single_click_deselect=false
+strip_trailing_blank_lines=false
+enable_xmltagging=false
+enable_enclose_words=false
+enable_enclose_words_auto=false
+enable_colortip=true
+enable_double_click_color_chooser=false
 EOF
 
 # Configure Treebrowser plugin
 mkdir -p "$CONFIG_DIR/plugins/treebrowser"
 cat > "$CONFIG_DIR/plugins/treebrowser/treebrowser.conf" << EOF
 [treebrowser]
+open_external_cmd=xdg-open '%d'
+open_terminal=st
+reverse_filter=false
+one_click_chdoc=false
 show_hidden_files=true
-show_dotfiles=true
-terminal_command=wezterm
-toolbar_position=bottom
-show_toolbar_at_bottom=true
+hide_object_files=false
+show_bars=2
+chroot_on_dclick=false
+follow_current_doc=true
+on_delete_close_file=true
+on_open_focus_editor=false
+show_tree_lines=true
+show_bookmarks=false
+show_icons=2
+open_new_files=true
 EOF
 
 echo -e "${GREEN}Custom Geany configuration applied successfully!${NC}"
