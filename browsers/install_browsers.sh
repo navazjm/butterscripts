@@ -42,9 +42,8 @@ show_menu() {
     echo -e "${CYAN}6. ${NC}Vivaldi"
     echo -e "${CYAN}7. ${NC}Zen Browser"
     echo -e "${CYAN}8. ${NC}Chromium"
-    echo -e "${CYAN}9. ${NC}Ungoogled Chromium"
-    echo -e "${CYAN}10. ${NC}All Browsers"
-    echo -e "${CYAN}11. ${NC}Exit"
+    echo -e "${CYAN}9. ${NC}All Browsers"
+    echo -e "${CYAN}10. ${NC}Exit"
     echo -e "${CYAN}=========================================================${NC}"
     
     # Simple read command with normal terminal behavior
@@ -56,14 +55,14 @@ show_menu() {
         exit 0
     fi
     
-    # Check if user wants to exit with option 11
-    if [[ "$input" == "11" ]]; then
+    # Check if user wants to exit with option 10
+    if [[ "$input" == "10" ]]; then
         echo -e "${YELLOW}Exiting...${NC}"
         exit 0
     fi
     
-    # Install all browsers if option 10 is selected
-    if [[ "$input" == "10" ]]; then
+    # Install all browsers if option 9 is selected
+    if [[ "$input" == "9" ]]; then
         install_firefox
         install_firefox_esr
         install_librewolf
@@ -72,7 +71,6 @@ show_menu() {
         install_vivaldi
         install_zen
         install_chromium
-        install_ungoogled_chromium
         echo -e "${GREEN}All browsers have been installed!${NC}"
         exit 0
     fi
@@ -88,7 +86,6 @@ show_menu() {
             6) install_vivaldi ;;
             7) install_zen ;;
             8) install_chromium ;;
-            9) install_ungoogled_chromium ;;
             *) echo -e "${RED}Invalid choice: $choice (skipping)${NC}" ;;
         esac
     done
@@ -409,41 +406,6 @@ install_chromium() {
     echo -e "${YELLOW}You can run Chromium by typing 'chromium' in the terminal or launching it from the applications menu.${NC}"
 }
 
-# Function to install Ungoogled Chromium
-install_ungoogled_chromium() {
-    # Check if Ungoogled Chromium is already installed
-    if is_installed ungoogled-chromium; then
-        echo -e "${GREEN}Ungoogled Chromium is already installed. Skipping installation.${NC}"
-        return
-    fi
-    
-    echo -e "${GREEN}Installing Ungoogled Chromium...${NC}"
-    
-    # Install dependencies
-    ensure_dependencies
-    
-    # Install required tools
-    sudo apt install -y debian-keyring apt-transport-https
-    
-    # Check for architecture and set the appropriate variable
-    arch=$(dpkg --print-architecture)
-    
-    # Add the repository and key
-    echo "deb [arch=$arch] https://download.opensuse.org/repositories/home:/ungoogled_chromium/Debian_12/ /" | sudo tee /etc/apt/sources.list.d/ungoogled-chromium.list > /dev/null
-    
-    # Download and add the repository signing key
-    curl -fsSL https://download.opensuse.org/repositories/home:/ungoogled_chromium/Debian_12/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/ungoogled-chromium.gpg > /dev/null
-    
-    # Update and install
-    sudo apt update
-    if ! sudo apt install -y ungoogled-chromium; then
-        echo -e "${RED}Failed to install Ungoogled Chromium.${NC}"
-        return 1
-    fi
-    
-    echo -e "${GREEN}Ungoogled Chromium installation complete!${NC}"
-    echo -e "${YELLOW}You can run Ungoogled Chromium by typing 'ungoogled-chromium' in the terminal or launching it from the applications menu.${NC}"
-}
 
 # Ensure we have necessary privileges
 if [[ $EUID -ne 0 ]]; then
