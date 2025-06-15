@@ -13,11 +13,13 @@ A simple Discord installer and updater for Linux systems.
 
 ## Requirements
 - Linux-based operating system
-- wget for downloading files
+- wget or curl for downloading files
 - sudo privileges for Discord installation
 
 ## Installation
+
 To set up Butter Discord:
+
 ```bash
 # Clone repository
 git clone https://github.com/drewgrif/butterscripts.git
@@ -26,23 +28,19 @@ git clone https://github.com/drewgrif/butterscripts.git
 cd butterscripts/discord
 
 # Make executable
-chmod +x butterdis.sh
-
-# Setup script in your environment
-./butterdis.sh setup
-
+chmod +x butterdis_simple.sh
 ```
 
 ## Usage
 ```bash
 # Install or update Discord
-butter-discord
+./butterdis_simple.sh 
 
 # Uninstall Discord
-butter-discord uninstall
+./butterdis_simple.sh uninstall
 
 # Show help information
-butter-discord help
+./butterdis_simple.sh help
 ```
 
 ## How It Works
