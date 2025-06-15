@@ -1,9 +1,12 @@
 #!/bin/bash
 
+set -e
+
 # Define variables
 DISCORD_DIR="/opt/Discord"
 DISCORD_BIN="/usr/bin/Discord"
 DESKTOP_FILE="/usr/share/applications/discord.desktop"
+TAR_URL="https://discord.com/api/download?platform=linux&format=tar.gz"
 TAR_FILE="discord.tar.gz"
 
 # Function to install or update Discord
@@ -12,7 +15,14 @@ install_discord() {
     
     # Download latest Discord
     echo "Downloading latest Discord..."
-    wget "https://discord.com/api/download?platform=linux&format=tar.gz" -O "$TAR_FILE"
+    if command -v wget >/dev/null 2>&1; then
+        wget "$TAR_URL" -O "$TAR_FILE"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -L "$TAR_URL" -o "$TAR_FILE"
+    else
+        echo "Error: Neither wget nor curl is installed." >&2
+        exit 1
+    fi
     
     # Remove old installation if exists
     if [ -d "$DISCORD_DIR" ] || [ -f "$DISCORD_BIN" ]; then
